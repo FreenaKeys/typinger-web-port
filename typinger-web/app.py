@@ -5,7 +5,7 @@ Typinger Web - Flaskアプリケーション
 タイピング練習Webアプリのメインアプリケーションファイルです。
 """
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for
 from flask_cors import CORS
 from datetime import datetime
 import os
@@ -102,7 +102,29 @@ def typing_page(scenario_file):
     # シナリオから文を取得
     sentence_data = scenario_manager.get_first_sentence(scenario_file)
     if not sentence_data:
-        return render_template('error.html', error=f"Scenario not found: {scenario_file}"), 404
+        # エラーページをHTMLで返す
+        return f"""
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <title>エラー</title>
+            <link rel="stylesheet" href="{url_for('static', filename='css/style.css')}">
+        </head>
+        <body>
+            <div class="container">
+                <header><h1>Typinger</h1></header>
+                <main>
+                    <div style="text-align: center; padding: 50px;">
+                        <h2>❌ エラー</h2>
+                        <p>シナリオが見つかりません: {scenario_file}</p>
+                        <p><a href="/typing/" class="btn btn-primary" style="display: inline-block; margin-top: 20px;">設定に戻る</a></p>
+                    </div>
+                </main>
+            </div>
+        </body>
+        </html>
+        """, 404
     
     target_text, target_rubi = sentence_data
     
@@ -123,6 +145,13 @@ def typing_page(scenario_file):
                           session_id=session_id,
                           target_text=target_text,
                           target_rubi=target_rubi)
+
+
+@app.route('/typing/', defaults={'scenario_file': None})
+@app.route('/typing')
+def typing_setup(scenario_file):
+    """タイピング設定ページ（シナリオ・キーマップ選択）"""
+    return render_template('typing_setup.html')
 
 
 @app.route('/api/session/<session_id>/progress', methods=['GET'])
@@ -281,6 +310,12 @@ def complete_session(session_id):
     del sessions[session_id]
     
     return jsonify(result)
+
+
+@app.route('/api/session/<session_id>/finish', methods=['POST'])
+def finish_session(session_id):
+    """セッション完了（completeのエイリアス）"""
+    return complete_session(session_id)
 
 
 @app.route('/api/health', methods=['GET'])

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typinger - タイピング設定</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .setup-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .setup-section {
+            margin-bottom: 30px;
+        }
+        .setup-section h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .setup-section select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .setup-section select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        .setup-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .setup-buttons button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-start {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            flex: 1;
+        }
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+        }
+        .btn-home {
+            background: #ecf0f1;
+            color: #2c3e50;
+            flex: 0.5;
+        }
+        .btn-home:hover {
+            background: #bdc3c7;
+        }
+        .setup-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Typinger</h1>
+            <p class="subtitle">Web版 タイピング練習ソフト</p>
+        </header>
+
+        <main>
+            <div class="setup-container">
+                <h2>🎯 タイピング設定</h2>
+
+                <!-- シナリオ選択 -->
+                <div class="setup-section">
+                    <h3>📝 シナリオを選択</h3>
+                    <select id="scenario-select">
+                        <option value="">-- シナリオを選んでください --</option>
+                    </select>
+                </div>
+
+                <!-- キーマップ選択 -->
+                <div class="setup-section">
+                    <h3>⌨️ キーボード配列を選択</h3>
+                    <select id="keymap-select">
+                        <option value="jis">JIS配列 (日本語)</option>
+                        <option value="ansi">ANSI配列</option>
+                        <option value="dvorak">Dvorak配列</option>
+                    </select>
+                </div>
+
+                <!-- 情報 -->
+                <div class="setup-info">
+                    <p>✅ シナリオを選択してから「タイピング開始」ボタンをクリックしてください</p>
+                    <p>✅ キーマップはいつでも変更できます</p>
+                </div>
+
+                <!-- ボタン -->
+                <div class="setup-buttons">
+                    <button id="btn-start" class="btn-start">▶ タイピング開始</button>
+                    <button id="btn-home" class="btn-home">ホーム</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Typinger Web版 - オープンソース タイピング練習ソフト</p>
+        </footer>
+    </div>
+
+    <script>
+        console.log('🎬 Typing setup page loaded');
+
+        let scenarios = [];
+        let selectedScenario = null;
+        let selectedKeymap = 'jis';
+
+        // ========== シナリオ読み込み ==========
+        async function loadScenarios() {
+            try {
+                console.log('📋 Loading scenarios...');
+                const response = await fetch('/api/scenarios');
+                const data = await response.json();
+
+                if (data.ok && data.scenarios) {
+                    scenarios = data.scenarios;
+                    console.log(`✅ Loaded ${scenarios.length} scenarios`);
+
+                    const select = document.getElementById('scenario-select');
+                    scenarios.forEach(scenario => {
+                        const option = document.createElement('option');
+                        option.value = scenario.filename;
+                        option.textContent = `${scenario.title} (${scenario.sentence_count || 0}問)`;
+                        select.appendChild(option);
+                    });
+                } else {
+                    console.error('❌ Failed to load scenarios:', data.error);
+                }
+            } catch (error) {
+                console.error('❌ Error loading scenarios:', error);
+            }
+        }
+
+        // ========== イベントリスナー ==========
+        document.getElementById('scenario-select').addEventListener('change', (e) => {
+            selectedScenario = e.target.value;
+            console.log('📝 Selected scenario:', selectedScenario);
+        });
+
+        document.getElementById('keymap-select').addEventListener('change', (e) => {
+            selectedKeymap = e.target.value;
+            console.log('⌨️ Selected keymap:', selectedKeymap);
+        });
+
+        document.getElementById('btn-start').addEventListener('click', () => {
+            if (!selectedScenario) {
+                alert('シナリオを選択してください');
+                return;
+            }
+            console.log('🎬 Starting typing session');
+            console.log('  Scenario:', selectedScenario);
+            console.log('  Keymap:', selectedKeymap);
+            
+            // キーマップをセッションストレージに保存
+            sessionStorage.setItem('selectedKeymap', selectedKeymap);
+            
+            // タイピング画面に遷移
+            window.location.href = `/typing/${selectedScenario}`;
+        });
+
+        document.getElementById('btn-home').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+
+        // 初期化
+        loadScenarios();
+    </script>
+</body>
+</html>

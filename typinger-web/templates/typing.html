@@ -172,6 +172,14 @@
 
         // 初期キーマップ読み込み
         loadKeymap('jis');
+        
+        // セッションストレージから keymap を読み込み
+        const savedKeymap = sessionStorage.getItem('selectedKeymap');
+        if (savedKeymap) {
+            console.log('💾 Loading saved keymap:', savedKeymap);
+            loadKeymap(savedKeymap);
+            document.getElementById('keymap-select').value = savedKeymap;
+        }
         console.log('  Target Rubi:', TARGET_RUBI);
 
         // ========== UI更新関数 ==========
@@ -250,7 +258,7 @@
 
                 if (data.ok) {
                     // 結果を反映
-                    if (data.correct) {
+                    if (data.result === 'correct') {
                         correct++;
                         console.log('✅ Correct! Total:', correct);
                     } else {
