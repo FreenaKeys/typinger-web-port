@@ -107,10 +107,12 @@ header h1 {
     gap: 30px;
     animation: fadeIn 0.3s ease;
     align-items: start;
+    min-height: 600px;
 }
 
 .home-left {
     min-width: 0;
+    min-height: 400px;
 }
 
 .home-right {
@@ -290,8 +292,9 @@ header h1 {
 /* Scenario Select */
 .scenario-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 15px;
+    min-height: 300px;
 }
 
 .scenario-item {

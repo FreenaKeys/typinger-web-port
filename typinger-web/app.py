@@ -634,6 +634,173 @@ def download_keymap(filename):
         return jsonify({'error': str(e)}), 500
 
 
+# ==================== シナリオライター関連エンドポイント ====================
+
+@app.route('/scenario-writer')
+def scenario_writer():
+    """シナリオライターページを提供"""
+    return render_template('scenario_writer.html')
+
+@app.route('/api/scenario/new')
+def get_new_scenario():
+    """新しいシナリオテンプレートを取得"""
+    try:
+        template = scenario_manager.create_default_scenario()
+        return jsonify(template)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scenario/list')
+def list_scenarios_api():
+    """シナリオ一覧を取得"""
+    try:
+        scenarios = scenario_manager.get_available_scenarios()
+        scenario_list = []
+        
+        for filename in scenarios:
+            info = scenario_manager.get_scenario_info(filename)
+            if info:
+                scenario_list.append(info)
+        
+        return jsonify({
+            'scenarios': scenario_list,
+            'count': len(scenario_list)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scenario/<filename>')
+def get_scenario(filename):
+    """シナリオを取得"""
+    try:
+        scenario = scenario_manager.load_scenario(filename)
+        if not scenario:
+            return jsonify({'error': 'Scenario not found'}), 404
+        
+        return jsonify({
+            'filename': filename,
+            'scenario': scenario
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scenario/save', methods=['POST'])
+def save_scenario():
+    """シナリオを保存"""
+    try:
+        data = request.get_json()
+        filename = data.get('filename', 'new_scenario.json')
+        scenario_data = data.get('scenario')
+        
+        if not scenario_data:
+            return jsonify({'error': 'No scenario data provided'}), 400
+        
+        success, message = scenario_manager.save_scenario(filename, scenario_data)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': message,
+                'filename': filename.replace('.json', '')
+            })
+        else:
+            return jsonify({'error': message}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scenario/validate', methods=['POST'])
+def validate_scenario():
+    """シナリオのバリデーション"""
+    try:
+        scenario_data = request.get_json()
+        valid, errors = scenario_manager.validate_scenario(scenario_data)
+        
+        return jsonify({
+            'valid': valid,
+            'errors': errors if errors else [],
+            'message': '有効です' if valid else f'{len(errors)}個のエラーがあります'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scenario/upload', methods=['POST'])
+def upload_scenario():
+    """シナリオファイルをアップロード"""
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not file.filename.endswith('.json'):
+            return jsonify({'error': 'File must be a JSON file'}), 400
+        
+        # ファイルを読み込み
+        try:
+            scenario_data = json.loads(file.read().decode('utf-8'))
+        except Exception as e:
+            return jsonify({'error': f'Invalid JSON: {str(e)}'}), 400
+        
+        # バリデーション
+        valid, errors = scenario_manager.validate_scenario(scenario_data)
+        if not valid:
+            return jsonify({'error': f'Validation failed: {", ".join(errors[:3])}'}), 400
+        
+        # 保存
+        filename = file.filename
+        success, message = scenario_manager.save_scenario(filename, scenario_data)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': message,
+                'filename': filename.replace('.json', '')
+            })
+        else:
+            return jsonify({'error': message}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scenario/<filename>', methods=['DELETE'])
+def delete_scenario(filename):
+    """シナリオを削除"""
+    try:
+        success, message = scenario_manager.delete_scenario(filename)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': message
+            })
+        else:
+            return jsonify({'error': message}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scenario/<filename>/download')
+def download_scenario(filename):
+    """シナリオをダウンロード"""
+    try:
+        scenario = scenario_manager.load_scenario(filename)
+        if not scenario:
+            return jsonify({'error': 'Scenario not found'}), 404
+        
+        filename = filename if filename.endswith('.json') else filename + '.json'
+        
+        return Response(
+            json.dumps(scenario, ensure_ascii=False, indent=2),
+            mimetype='application/json',
+            headers={
+                'Content-Disposition': f'attachment; filename="{filename}"'
+            }
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     # 出力ディレクトリを作成
     os.makedirs("output", exist_ok=True)

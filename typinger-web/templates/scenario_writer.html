@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シナリオライター - Typinger</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/scenario_writer.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>📝 シナリオライター</h1>
+                <nav class="header-links">
+                    <a href="/">🎯 ホーム</a>
+                    <a href="/admin">📊 管理画面</a>
+                    <a href="/editor">⌨️ キーマップ</a>
+                    <a href="/scenario-writer" class="active">📝 シナリオ</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="writer-container">
+            <!-- コントロールパネル -->
+            <div class="control-panel">
+                <div class="panel-section">
+                    <input type="text" id="scenario-name" placeholder="シナリオ名（例：日常会話練習）" class="input-large">
+                </div>
+
+                <div class="panel-section">
+                    <input type="text" id="scenario-id" placeholder="ユニークID（例：com.typinger.daily）" class="input-large">
+                </div>
+
+                <div class="panel-section">
+                    <button id="btn-new" class="btn btn-primary">新規作成</button>
+                    <button id="btn-load" class="btn btn-secondary">読み込み</button>
+                    <button id="btn-save" class="btn btn-success">保存</button>
+                    <button id="btn-validate" class="btn btn-info">検証</button>
+                </div>
+
+                <div class="panel-section">
+                    <button id="btn-upload" class="btn btn-warning">アップロード</button>
+                    <button id="btn-download" class="btn btn-info">ダウンロード</button>
+                    <button id="btn-delete" class="btn btn-danger">削除</button>
+                </div>
+            </div>
+
+            <!-- メッセージ表示 -->
+            <div id="message-area" class="message-area"></div>
+
+            <!-- メインエディタエリア -->
+            <div class="editor-main">
+                <!-- 左側：エントリリスト -->
+                <div class="editor-left">
+                    <div class="entries-panel">
+                        <div class="panel-header">
+                            <h3>エントリ一覧</h3>
+                            <button id="btn-add-entry" class="btn btn-small btn-primary">+ 追加</button>
+                        </div>
+                        <div id="entries-list" class="entries-list"></div>
+                    </div>
+                </div>
+
+                <!-- 右側：エディタ -->
+                <div class="editor-right">
+                    <div class="edit-panel">
+                        <h3>エントリ編集</h3>
+                        
+                        <div class="edit-field">
+                            <label for="edit-text">テキスト（日本語）：</label>
+                            <input type="text" id="edit-text" placeholder="例：おはようございます" class="input-full">
+                        </div>
+
+                        <div class="edit-field">
+                            <label for="edit-rubi">ローマ字入力：</label>
+                            <input type="text" id="edit-rubi" placeholder="例：ohayougozaimasu" class="input-full">
+                        </div>
+
+                        <div class="edit-field">
+                            <label for="edit-level">難易度：</label>
+                            <select id="edit-level" class="input-full">
+                                <option value="beginner">初級</option>
+                                <option value="intermediate">中級</option>
+                                <option value="advanced">上級</option>
+                                <option value="expert">エキスパート</option>
+                            </select>
+                        </div>
+
+                        <div class="edit-buttons">
+                            <button id="btn-apply-edit" class="btn btn-success">適用</button>
+                            <button id="btn-clear-edit" class="btn btn-secondary">キャンセル</button>
+                        </div>
+                    </div>
+
+                    <!-- プレビューパネル -->
+                    <div class="preview-panel">
+                        <h3>プレビュー</h3>
+                        <div class="preview-content">
+                            <div class="preview-item">
+                                <strong>日本語：</strong> <span id="preview-text">-</span>
+                            </div>
+                            <div class="preview-item">
+                                <strong>ローマ字：</strong> <span id="preview-rubi">-</span>
+                            </div>
+                            <div class="preview-item">
+                                <strong>難易度：</strong> <span id="preview-level">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- シナリオ情報 -->
+            <div class="info-section">
+                <h3>シナリオ情報</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">エントリ数：</span>
+                        <span id="info-count" class="info-value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">ユニークID：</span>
+                        <span id="info-id" class="info-value text-mono">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">ステータス：</span>
+                        <span id="info-status" class="info-value status-valid">有効</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 既存シナリオ一覧 -->
+            <div class="scenarios-list-section">
+                <h2>保存済みシナリオ</h2>
+                <div id="saved-scenarios" class="saved-scenarios"></div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Typinger - Japanese Typing Practice. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- ファイル入力 -->
+    <input type="file" id="file-upload" accept=".json" style="display: none;">
+
+    <script src="/static/js/scenario_writer.js"></script>
+</body>
+</html>

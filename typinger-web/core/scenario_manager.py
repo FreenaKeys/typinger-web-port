@@ -204,3 +204,156 @@ class ScenarioManager:
     def clear_cache(self):
         """キャッシュをクリア"""
         self.cache.clear()
+
+    def validate_scenario(self, data: Dict) -> Tuple[bool, List[str]]:
+        """
+        シナリオJSONを検証
+        
+        Args:
+            data: シナリオデータ
+            
+        Returns:
+            Tuple[bool, List[str]]: (検証結果, エラーリスト)
+        """
+        errors = []
+
+        # メタデータチェック
+        if 'meta' not in data:
+            errors.append("'meta' フィールドが必要です")
+        else:
+            meta = data['meta']
+            
+            if 'name' not in meta:
+                errors.append("'meta.name' が必要です")
+            elif not isinstance(meta['name'], str) or len(meta['name']) == 0:
+                errors.append("'meta.name' は空でない文字列である必要があります")
+            
+            if 'uniqueid' not in meta:
+                errors.append("'meta.uniqueid' が必要です")
+            elif not isinstance(meta['uniqueid'], str):
+                errors.append("'meta.uniqueid' は文字列である必要があります")
+
+        # エントリチェック
+        if 'entries' not in data and 'sentences' not in data:
+            errors.append("'entries' または 'sentences' フィールドが必要です")
+        else:
+            entries = data.get('entries', data.get('sentences', {}))
+            
+            if not isinstance(entries, dict):
+                errors.append("'entries' はオブジェクトである必要があります")
+            elif len(entries) == 0:
+                errors.append("'entries' は少なくとも1つのエントリが必要です")
+            else:
+                for key, entry in entries.items():
+                    if not isinstance(entry, dict):
+                        errors.append(f"entries[{key}] はオブジェクトである必要があります")
+                        continue
+                    
+                    if 'text' not in entry:
+                        errors.append(f"entries[{key}] に 'text' フィールドが必要です")
+                    
+                    if 'rubi' not in entry:
+                        errors.append(f"entries[{key}] に 'rubi' フィールドが必要です")
+
+        return len(errors) == 0, errors
+
+    def save_scenario(self, filename: str, data: Dict) -> Tuple[bool, str]:
+        """
+        シナリオを保存
+        
+        Args:
+            filename: シナリオファイル名
+            data: シナリオデータ
+            
+        Returns:
+            Tuple[bool, str]: (成功/失敗, メッセージ)
+        """
+        try:
+            # バリデーション
+            valid, errors = self.validate_scenario(data)
+            if not valid:
+                return False, f"バリデーションエラー: {', '.join(errors[:3])}"
+            
+            # ファイル名サニタイズ
+            filename = filename.replace('..', '').replace('/', '').replace('\\', '')
+            if not filename.endswith('.json'):
+                filename += '.json'
+            
+            # ディレクトリ作成
+            os.makedirs(self.scenario_dir, exist_ok=True)
+            
+            filepath = os.path.join(self.scenario_dir, filename)
+            
+            # セキュリティチェック
+            if not os.path.abspath(filepath).startswith(os.path.abspath(self.scenario_dir)):
+                return False, "無効なパス"
+            
+            # ファイル書き込み
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            
+            # キャッシュクリア
+            self.clear_cache()
+            
+            return True, f"シナリオを保存しました: {filename}"
+        except Exception as e:
+            return False, f"保存エラー: {str(e)}"
+
+    def delete_scenario(self, filename: str) -> Tuple[bool, str]:
+        """
+        シナリオを削除
+        
+        Args:
+            filename: シナリオファイル名
+            
+        Returns:
+            Tuple[bool, str]: (成功/失敗, メッセージ)
+        """
+        try:
+            # ファイル名サニタイズ
+            filename = filename.replace('..', '').replace('/', '').replace('\\', '')
+            if not filename.endswith('.json'):
+                filename += '.json'
+            
+            filepath = os.path.join(self.scenario_dir, filename)
+            
+            # セキュリティチェック
+            if not os.path.abspath(filepath).startswith(os.path.abspath(self.scenario_dir)):
+                return False, "無効なパス"
+            
+            if not os.path.exists(filepath):
+                return False, "シナリオが見つかりません"
+            
+            os.remove(filepath)
+            
+            # キャッシュクリア
+            self.clear_cache()
+            
+            return True, f"シナリオを削除しました: {filename}"
+        except Exception as e:
+            return False, f"削除エラー: {str(e)}"
+
+    def create_default_scenario(self) -> Dict:
+        """
+        デフォルトシナリオテンプレートを作成
+        
+        Returns:
+            Dict: シナリオテンプレート
+        """
+        from datetime import datetime
+        
+        return {
+            "meta": {
+                "name": "新しいシナリオ",
+                "uniqueid": f"com.typinger.custom_{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                "requiredver": "0.1.0"
+            },
+            "entries": {
+                "1": {
+                    "text": "テキスト",
+                    "rubi": "tekisuto",
+                    "level": "beginner"
+                }
+            }
+        }
+

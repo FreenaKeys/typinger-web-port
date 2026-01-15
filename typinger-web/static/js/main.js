@@ -2,6 +2,7 @@
 
 class TypingerApp {
     constructor() {
+        console.log('=== Typinger App Constructor Called ===');
         this.sessionId = null;
         this.currentScenario = null;
         this.typingStartTime = null;
@@ -9,9 +10,11 @@ class TypingerApp {
     }
 
     init() {
+        console.log('Initializing app...');
         this.loadScenarios();
         this.setupKeymapPresets();
         this.setupEventListeners();
+        console.log('App initialization complete!');
     }
 
     // ========== キーマップ管理 ==========
@@ -65,19 +68,28 @@ class TypingerApp {
             const response = await fetch('/api/scenarios');
             const data = await response.json();
             
+            console.log('Scenarios response:', data); // デバッグログ
+            
             if (data.ok) {
                 this.displayScenarios(data.scenarios);
             } else {
                 console.error('Failed to load scenarios:', data.error);
+                this.displayScenarios([]);
             }
         } catch (error) {
             console.error('Error loading scenarios:', error);
+            this.displayScenarios([]);
         }
     }
 
     displayScenarios(scenarios) {
         const scenarioList = document.getElementById('scenario-list');
         scenarioList.innerHTML = '';
+        
+        if (!scenarios || scenarios.length === 0) {
+            scenarioList.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #7f8c8d; padding: 20px;">シナリオが見つかりません</p>';
+            return;
+        }
         
         scenarios.forEach(scenario => {
             const item = document.createElement('div');

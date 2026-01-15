@@ -1,0 +1,494 @@
+/* Scenario Writer Styles */
+
+.writer-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Control Panel */
+.control-panel {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.panel-section {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.input-large,
+.input-full {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.input-large {
+    flex-grow: 1;
+    min-width: 250px;
+}
+
+.input-full {
+    width: 100%;
+}
+
+/* Message Area */
+.message-area {
+    margin-bottom: 20px;
+    min-height: 20px;
+}
+
+.message {
+    padding: 12px 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.message-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.message-warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.message-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Editor Main */
+.editor-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.editor-left,
+.editor-right {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Entries Panel */
+.entries-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3498db;
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #2c3e50;
+}
+
+.entries-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.entry-item {
+    padding: 12px;
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.entry-item:hover {
+    background: #f0f8ff;
+    border-color: #3498db;
+}
+
+.entry-item.active {
+    background: #e3f2fd;
+    border-color: #2196F3;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+}
+
+.entry-text {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 4px;
+    font-size: 0.9em;
+}
+
+.entry-rubi {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8em;
+    color: #7f8c8d;
+    margin-bottom: 6px;
+}
+
+.entry-delete-btn {
+    padding: 4px 8px;
+    font-size: 0.75em;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.entry-delete-btn:hover {
+    background: #c0392b;
+}
+
+/* Edit Panel */
+.edit-panel,
+.preview-panel {
+    margin-bottom: 20px;
+}
+
+.edit-panel h3,
+.preview-panel h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.edit-field {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-field label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+}
+
+.edit-field input,
+.edit-field select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.edit-field input:focus,
+.edit-field select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.btn-success {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #229954;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+.btn-warning {
+    background: #f39c12;
+    color: white;
+}
+
+.btn-warning:hover {
+    background: #e67e22;
+}
+
+.btn-info {
+    background: #16a085;
+    color: white;
+}
+
+.btn-info:hover {
+    background: #138d75;
+}
+
+.btn-small {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* Preview Panel */
+.preview-content {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.preview-item {
+    margin-bottom: 12px;
+    font-size: 0.95em;
+}
+
+.preview-item strong {
+    display: block;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.preview-item span {
+    display: block;
+    padding: 6px 8px;
+    background: white;
+    border-left: 3px solid #3498db;
+    font-family: 'Courier New', monospace;
+    color: #0c5460;
+}
+
+/* Info Section */
+.info-section {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-section h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    border-left: 3px solid #3498db;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-family: 'Courier New', monospace;
+    color: #3498db;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.text-mono {
+    font-family: 'Courier New', monospace;
+}
+
+.status-valid {
+    color: #27ae60;
+}
+
+.status-invalid {
+    color: #e74c3c;
+}
+
+/* Scenarios List Section */
+.scenarios-list-section {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.scenarios-list-section h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.saved-scenarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.scenario-card {
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.scenario-card:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+}
+
+.scenario-card h4 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+    font-size: 1em;
+}
+
+.scenario-info {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    margin: 0 0 4px 0;
+}
+
+.scenario-id {
+    font-size: 0.75em;
+    font-family: 'Courier New', monospace;
+    color: #95a5a6;
+    margin: 8px 0;
+    word-break: break-all;
+}
+
+.scenario-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.scenario-actions .btn {
+    flex: 1;
+    padding: 6px;
+    font-size: 0.85em;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .editor-main {
+        grid-template-columns: 1fr;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .writer-container {
+        padding: 10px;
+    }
+
+    .control-panel {
+        padding: 15px;
+    }
+
+    .panel-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .input-large,
+    .input-full {
+        min-width: auto;
+    }
+
+    .editor-main {
+        gap: 15px;
+    }
+
+    .editor-left,
+    .editor-right {
+        padding: 15px;
+    }
+
+    .saved-scenarios {
+        grid-template-columns: 1fr;
+    }
+}
