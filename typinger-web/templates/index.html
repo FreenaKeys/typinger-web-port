@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typinger - Web版 タイピング練習</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Typinger</h1>
+            <p class="subtitle">Web版 タイピング練習ソフト</p>
+            <div class="header-links">
+                <a href="/admin" class="header-link">📊 管理画面</a>
+                <a href="/editor" class="header-link">⌨️ キーマップ</a>
+            </div>
+        </header>
+
+        <main>
+            <!-- シナリオ選択画面 -->
+            <section id="scenario-select" class="screen">
+                <h2>シナリオを選択</h2>
+                <div id="scenario-list" class="scenario-list">
+                    <!-- 動的に生成 -->
+                </div>
+            </section>
+
+            <!-- タイピング画面 -->
+            <section id="typing-screen" class="screen hidden">
+                <div class="typing-container">
+                    <!-- 目標テキスト表示 -->
+                    <div class="target-text-box">
+                        <p class="label">目標テキスト</p>
+                        <p id="target-text" class="target-text">こんにちは</p>
+                    </div>
+
+                    <!-- ルビ（ローマ字）表示 -->
+                    <div class="rubi-box">
+                        <p class="label">ローマ字入力</p>
+                        <div class="rubi-display">
+                            <span id="rubi-completed" class="rubi-completed"></span>
+                            <span id="rubi-current" class="rubi-current"></span>
+                            <span id="rubi-remaining" class="rubi-remaining"></span>
+                        </div>
+                    </div>
+
+                    <!-- 入力フィールド -->
+                    <div class="input-box">
+                        <input 
+                            id="typing-input" 
+                            type="text" 
+                            placeholder="ここに入力してください..."
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <!-- 統計情報 -->
+                    <div class="stats-box">
+                        <div class="stat-item">
+                            <span class="stat-label">正解:</span>
+                            <span id="stat-correct" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">誤入力:</span>
+                            <span id="stat-incorrect" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">正解率:</span>
+                            <span id="stat-accuracy" class="stat-value">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">進捗:</span>
+                            <span id="stat-progress" class="stat-value">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- 操作ボタン -->
+                    <div class="button-box">
+                        <button id="btn-finish" class="btn btn-primary">完了</button>
+                        <button id="btn-escape" class="btn btn-secondary">中止</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 統計画面 -->
+            <section id="statistics-screen" class="screen hidden">
+                <div class="statistics-container">
+                    <h2>タイピング結果</h2>
+                    
+                    <div class="result-box">
+                        <h3>基本統計</h3>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <span class="stat-name">総入力時間</span>
+                                <span id="result-duration" class="stat-big">0.00秒</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-name">正解率</span>
+                                <span id="result-accuracy" class="stat-big">0%</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-name">WPM (正答ベース)</span>
+                                <span id="result-wpm" class="stat-big">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-name">CPM (正答ベース)</span>
+                                <span id="result-cpm" class="stat-big">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-box">
+                        <h3>詳細統計</h3>
+                        <table class="result-table">
+                            <tr>
+                                <td>正解キー数:</td>
+                                <td id="result-correct-count">0</td>
+                            </tr>
+                            <tr>
+                                <td>誤入力キー数:</td>
+                                <td id="result-incorrect-count">0</td>
+                            </tr>
+                            <tr>
+                                <td>Backspace回数:</td>
+                                <td id="result-backspace-count">0</td>
+                            </tr>
+                            <tr>
+                                <td>平均キー間隔:</td>
+                                <td id="result-avg-interval">0ms</td>
+                            </tr>
+                            <tr>
+                                <td>最小キー間隔:</td>
+                                <td id="result-min-interval">0ms</td>
+                            </tr>
+                            <tr>
+                                <td>最大キー間隔:</td>
+                                <td id="result-max-interval">0ms</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="result-box">
+                        <h3>ファイル出力</h3>
+                        <p id="result-files">CSV ファイルが出力フォルダに保存されました</p>
+                    </div>
+
+                    <!-- 操作ボタン -->
+                    <div class="button-box">
+                        <button id="btn-retry" class="btn btn-primary">もう一度</button>
+                        <button id="btn-home" class="btn btn-secondary">ホームに戻る</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Typinger Web版 - オープンソース タイピング練習ソフト</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

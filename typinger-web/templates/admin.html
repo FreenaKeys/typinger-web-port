@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typinger - 管理画面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Typinger</h1>
+            <p class="subtitle">管理画面 - ログ・統計ビューア</p>
+        </header>
+
+        <main class="admin-main">
+            <!-- ナビゲーション -->
+            <nav class="admin-nav">
+                <button id="nav-dashboard" class="nav-btn active" data-section="dashboard">
+                    📊 ダッシュボード
+                </button>
+                <button id="nav-files" class="nav-btn" data-section="files">
+                    📁 ファイル一覧
+                </button>
+                <button id="nav-viewer" class="nav-btn" data-section="viewer">
+                    👁️ ログビューア
+                </button>
+                <button id="nav-statistics" class="nav-btn" data-section="statistics">
+                    📈 統計
+                </button>
+                <button id="nav-home" class="nav-btn" data-section="home">
+                    🏠 ホームに戻る
+                </button>
+            </nav>
+
+            <!-- コンテンツエリア -->
+            <div class="admin-content">
+                <!-- ダッシュボード -->
+                <section id="section-dashboard" class="admin-section active">
+                    <h2>ダッシュボード</h2>
+                    
+                    <div class="dashboard-grid">
+                        <!-- 統計カード -->
+                        <div class="stat-card">
+                            <div class="stat-card-title">総CSVファイル数</div>
+                            <div class="stat-card-value" id="stat-total-files">-</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-card-title">イベントファイル</div>
+                            <div class="stat-card-value" id="stat-events-files">-</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-card-title">サマリーファイル</div>
+                            <div class="stat-card-value" id="stat-summary-files">-</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-card-title">合計ファイルサイズ</div>
+                            <div class="stat-card-value" id="stat-total-size">-</div>
+                        </div>
+                    </div>
+
+                    <!-- 最新セッション -->
+                    <div class="dashboard-section">
+                        <h3>最新セッション</h3>
+                        <div id="latest-session-info" class="info-box">
+                            データを読み込み中...
+                        </div>
+                    </div>
+
+                    <!-- クイックアクション -->
+                    <div class="dashboard-section">
+                        <h3>クイックアクション</h3>
+                        <div class="button-group">
+                            <button id="btn-refresh-dashboard" class="btn btn-primary">更新</button>
+                            <button id="btn-clear-old-logs" class="btn btn-secondary">古いログを削除</button>
+                            <button id="btn-export-all" class="btn btn-primary">全データをエクスポート</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ファイル一覧 -->
+                <section id="section-files" class="admin-section">
+                    <h2>ファイル一覧</h2>
+                    
+                    <div class="filter-box">
+                        <label for="file-type-filter">ファイルタイプでフィルター:</label>
+                        <select id="file-type-filter">
+                            <option value="all">すべて</option>
+                            <option value="events">イベント</option>
+                            <option value="summary">サマリー</option>
+                            <option value="kana_analysis">かな分析</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="files-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ファイル名</th>
+                                    <th>タイプ</th>
+                                    <th>サイズ</th>
+                                    <th>作成日時</th>
+                                    <th>アクション</th>
+                                </tr>
+                            </thead>
+                            <tbody id="files-tbody">
+                                <tr><td colspan="5">ファイルを読み込み中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ログビューア -->
+                <section id="section-viewer" class="admin-section">
+                    <h2>ログビューア</h2>
+                    
+                    <div class="viewer-controls">
+                        <label for="file-select">ファイルを選択:</label>
+                        <select id="file-select">
+                            <option value="">-- ファイルを選択してください --</option>
+                        </select>
+                        <button id="btn-load-file" class="btn btn-primary">読み込む</button>
+                    </div>
+
+                    <div id="viewer-content" class="viewer-content" style="display:none;">
+                        <div class="table-container">
+                            <table id="viewer-table" class="data-table">
+                                <thead id="viewer-thead"></thead>
+                                <tbody id="viewer-tbody"></tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="viewer-footer">
+                            <span id="row-count">行数: -</span>
+                            <span id="col-count">列数: -</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 統計 -->
+                <section id="section-statistics" class="admin-section">
+                    <h2>統計</h2>
+                    
+                    <div id="statistics-content">
+                        <p>統計情報を読み込み中...</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer>
+            <p>Typinger 管理画面 - ログビューア</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

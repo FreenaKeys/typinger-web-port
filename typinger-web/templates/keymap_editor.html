@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キーマップエディタ - Typinger</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/keymap_editor.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>⌨️ キーマップエディタ</h1>
+                <nav class="header-links">
+                    <a href="/">🎯 ホーム</a>
+                    <a href="/admin">📊 管理画面</a>
+                    <a href="/editor" class="active">⌨️ キーマップ</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="editor-container">
+            <!-- コントロールパネル -->
+            <div class="control-panel">
+                <div class="panel-section">
+                    <label for="keymap-name">キーマップ名：</label>
+                    <input type="text" id="keymap-name" placeholder="my_keymap" value="custom_keymap">
+                </div>
+
+                <div class="panel-section">
+                    <button id="btn-new" class="btn btn-primary">新規作成</button>
+                    <button id="btn-load" class="btn btn-secondary">読み込み</button>
+                    <button id="btn-save" class="btn btn-success">保存</button>
+                    <button id="btn-reset" class="btn btn-warning">リセット</button>
+                </div>
+
+                <div class="panel-section">
+                    <label for="format-select">フォーマット：</label>
+                    <select id="format-select">
+                        <option value="json">JSON</option>
+                        <option value="binary">バイナリ（Hex）</option>
+                        <option value="base64">Base64</option>
+                    </select>
+                    <button id="btn-download" class="btn btn-info">ダウンロード</button>
+                    <button id="btn-export" class="btn btn-info">エクスポート</button>
+                </div>
+
+                <div class="panel-section">
+                    <select id="preset-select">
+                        <option value="">プリセットを選択...</option>
+                        <option value="load-default">デフォルト (QWERTY)</option>
+                        <option value="load-dvorak">Dvorak</option>
+                        <option value="load-colemak">Colemak</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- メッセージ表示エリア -->
+            <div id="message-area" class="message-area"></div>
+
+            <!-- キー配置情報 -->
+            <div class="editor-info">
+                <div class="info-item">
+                    <span class="info-label">総キー数：</span>
+                    <span id="total-keys" class="info-value">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">バージョン：</span>
+                    <span id="version" class="info-value">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ファイルサイズ（バイナリ）：</span>
+                    <span id="file-size" class="info-value">0 bytes</span>
+                </div>
+            </div>
+
+            <!-- キーグリッド -->
+            <div class="keymap-editor-section">
+                <h2>キーマップエディタ</h2>
+                <div class="key-grid" id="key-grid"></div>
+            </div>
+
+            <!-- キー編集パネル -->
+            <div class="edit-panel">
+                <h3>キー設定</h3>
+                <div class="edit-field">
+                    <label for="edit-key-label">キーラベル：</label>
+                    <input type="text" id="edit-key-label" placeholder="例: A, Enter, Space">
+                </div>
+
+                <div class="edit-field">
+                    <label for="edit-key-code">HID コード：</label>
+                    <input type="number" id="edit-key-code" min="0" max="255" placeholder="0-255">
+                    <span id="code-name" class="code-name"></span>
+                </div>
+
+                <div class="edit-field">
+                    <label>修飾キー：</label>
+                    <div class="modifiers">
+                        <label class="mod-checkbox">
+                            <input type="checkbox" id="mod-shift" data-bit="0">
+                            <span>Shift</span>
+                        </label>
+                        <label class="mod-checkbox">
+                            <input type="checkbox" id="mod-ctrl" data-bit="1">
+                            <span>Ctrl</span>
+                        </label>
+                        <label class="mod-checkbox">
+                            <input type="checkbox" id="mod-alt" data-bit="2">
+                            <span>Alt</span>
+                        </label>
+                        <label class="mod-checkbox">
+                            <input type="checkbox" id="mod-gui" data-bit="3">
+                            <span>GUI</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="edit-field">
+                    <label for="mod-value">修飾値：</label>
+                    <input type="number" id="mod-value" min="0" max="15" value="0" readonly>
+                </div>
+
+                <div class="edit-buttons">
+                    <button id="btn-apply" class="btn btn-success">適用</button>
+                    <button id="btn-clear-key" class="btn btn-warning">クリア</button>
+                </div>
+            </div>
+
+            <!-- 検索・フィルタセクション -->
+            <div class="search-section">
+                <h3>キー検索</h3>
+                <input type="text" id="search-input" placeholder="キー名または番号で検索..." class="search-input">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <!-- インポート/エクスポート -->
+            <div class="io-section">
+                <h2>インポート/エクスポート</h2>
+                <div class="io-control">
+                    <div class="io-item">
+                        <h3>JSONからインポート</h3>
+                        <textarea id="json-import" placeholder="JSON形式のキーマップを貼り付けてください..."></textarea>
+                        <button id="btn-import-json" class="btn btn-secondary">インポート</button>
+                    </div>
+
+                    <div class="io-item">
+                        <h3>JSONエクスポート</h3>
+                        <textarea id="json-export" readonly></textarea>
+                        <button id="btn-copy-json" class="btn btn-info">コピー</button>
+                    </div>
+
+                    <div class="io-item">
+                        <h3>バイナリフォーマット</h3>
+                        <textarea id="binary-export" readonly></textarea>
+                        <button id="btn-copy-binary" class="btn btn-info">コピー</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 既存キーマップリスト -->
+            <div class="keymaps-list-section">
+                <h2>保存済みキーマップ</h2>
+                <div id="keymaps-list" class="keymaps-list"></div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Typinger - Japanese Typing Practice. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- ファイルアップロード用隠しフォーム -->
+    <input type="file" id="file-upload" accept=".json" style="display: none;">
+
+    <script src="/static/js/keymap_editor.js"></script>
+</body>
+</html>
