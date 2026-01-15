@@ -627,11 +627,11 @@ def get_keymap_preset(preset):
         elif preset == 'dvorak':
             keymap = keymap_manager.create_dvorak_keymap()
         else:
-            return jsonify({'error': 'Unknown preset'}), 400
+            return jsonify({'ok': False, 'error': 'Unknown preset'}), 400
         
-        return jsonify(keymap)
+        return jsonify({'ok': True, 'keymap': keymap})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'ok': False, 'error': str(e)}), 500
 
 @app.route('/api/keymap/<filename>', methods=['DELETE'])
 def delete_keymap(filename):

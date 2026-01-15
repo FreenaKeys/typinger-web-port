@@ -274,18 +274,19 @@
                     if (data.finished) {
                         console.log('🎉 Session finished!');
                         showResultScreen(data);
-                    } else if (data.progress) {
+                    } else if (data.progress !== undefined) {
                         // 進捗更新
                         const progressText = typeof data.progress === 'string' ? data.progress : data.progress.remaining || '';
                         currentProgress = progressText;
                         
-                        if (progressText) {
-                            document.getElementById('rubi-remaining').textContent = progressText;
-                            document.getElementById('rubi-progress').textContent = `✅ 入力済み: ${(TARGET_RUBI.length - progressText.length)} 文字`;
-                            console.log('📍 Progress:', progressText);
-                        } else {
+                        document.getElementById('rubi-remaining').textContent = progressText;
+                        document.getElementById('rubi-progress').textContent = `✅ 入力済み: ${(TARGET_RUBI.length - progressText.length)} 文字`;
+                        console.log('📍 Progress:', progressText);
+                        
+                        // 進捗が空の場合は完了
+                        if (progressText === '') {
                             console.log('🎉 All characters completed!');
-                            showResultScreen({correct: correct, errors: errors});
+                            setTimeout(() => showResultScreen({correct: correct, errors: errors}), 500);
                         }
                     }
                 }
