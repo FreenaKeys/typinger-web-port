@@ -65,19 +65,21 @@ class TypingerApp {
     // ========== シナリオ管理 ==========
     async loadScenarios() {
         try {
+            console.log('Loading scenarios...');
             const response = await fetch('/api/scenarios');
             const data = await response.json();
             
-            console.log('Scenarios response:', data); // デバッグログ
+            console.log('✓ Scenarios loaded:', data);
             
-            if (data.ok) {
+            if (data.ok && data.scenarios) {
+                console.log(`✓ Found ${data.scenarios.length} scenarios`);
                 this.displayScenarios(data.scenarios);
             } else {
-                console.error('Failed to load scenarios:', data.error);
+                console.error('✗ Failed to load scenarios:', data.error);
                 this.displayScenarios([]);
             }
         } catch (error) {
-            console.error('Error loading scenarios:', error);
+            console.error('✗ Error loading scenarios:', error);
             this.displayScenarios([]);
         }
     }
@@ -86,24 +88,63 @@ class TypingerApp {
         const scenarioList = document.getElementById('scenario-list');
         scenarioList.innerHTML = '';
         
+        console.log('Displaying scenarios:', scenarios);
+        
         if (!scenarios || scenarios.length === 0) {
-            scenarioList.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #7f8c8d; padding: 20px;">シナリオが見つかりません</p>';
+            console.warn('⚠ No scenarios to display');
+            scenarioList.innerHTML = `
+                <div class="no-scenarios-message">
+                    <p>📋 シナリオが見つかりません</p>
+                    <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px;">
+                        <a href="/scenario-writer" style="color: #3498db; text-decoration: none;">📝 シナリオライターでシナリオを作成</a>
+                    </p>
+                </div>
+            `;
             return;
         }
         
-        scenarios.forEach(scenario => {
+        scenarios.forEach((scenario, index) => {
             const item = document.createElement('div');
             item.className = 'scenario-item';
+            item.setAttribute('role', 'button');
+            item.setAttribute('tabindex', index);
             item.innerHTML = `
-                <div class="scenario-title">${scenario.title}</div>
-                <div class="scenario-info">
-                    ファイル: ${scenario.filename}<br>
-                    問題数: ${scenario.sentence_count || '不明'}
+                <div class="scenario-header">
+                    <h3 class="scenario-title">${scenario.title}</h3>
+                    <div class="scenario-badge">${scenario.sentence_count || 0} 問</div>
                 </div>
+                <div class="scenario-info">
+                    <p>📄 ファイル: <code>${scenario.filename}</code></p>
+                </div>
+                <button class="btn btn-scenario-play" aria-label="このシナリオでタイピング開始">
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">タイピング開始</span>
+                </button>
             `;
-            item.onclick = () => this.startSession(scenario.filename);
+            
+            // ボタンをクリック
+            const btn = item.querySelector('.btn-scenario-play');
+            const handleStart = () => this.startSession(scenario.filename);
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleStart();
+            });
+            
+            // Enterキーでも開始
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleStart();
+                }
+            });
+            
+            // カード全体をクリック
+            item.addEventListener('click', handleStart);
+            
             scenarioList.appendChild(item);
         });
+        
+        console.log(`✓ Rendered ${scenarios.length} scenario cards`);
     }
 
     // ========== セッション管理 ==========

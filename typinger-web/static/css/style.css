@@ -307,6 +307,8 @@ header h1 {
     box-shadow: var(--shadow);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .scenario-item::before {
@@ -345,6 +347,74 @@ header h1 {
     font-size: 0.85em;
     color: #7f8c8d;
     line-height: 1.5;
+    margin-bottom: 12px;
+    flex: 1;
+}
+
+.scenario-info p {
+    margin: 4px 0;
+}
+
+.no-scenarios-message {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #bdc3c7;
+}
+
+.no-scenarios-message a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.no-scenarios-message a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.btn-scenario-play {
+    width: 100%;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-transform: none;
+    letter-spacing: 0.5px;
+}
+
+.btn-scenario-play .btn-icon {
+    font-size: 1.1em;
+    display: inline-block;
+}
+
+.btn-scenario-play:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 16px rgba(52, 152, 219, 0.4);
+    letter-spacing: 1px;
+}
+
+.btn-scenario-play:active {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+}
+
+.btn-scenario-play:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
 }
 
 /* Typing Screen */
