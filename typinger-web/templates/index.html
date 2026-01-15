@@ -20,9 +20,29 @@
         <main>
             <!-- シナリオ選択画面 -->
             <section id="scenario-select" class="screen">
-                <h2>シナリオを選択</h2>
-                <div id="scenario-list" class="scenario-list">
-                    <!-- 動的に生成 -->
+                <div class="home-container">
+                    <div class="home-left">
+                        <h2>シナリオを選択</h2>
+                        <div id="scenario-list" class="scenario-list">
+                            <!-- 動的に生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- キーマップクイックアクセス -->
+                    <div class="home-right">
+                        <div class="keymap-quick-access">
+                            <h3>⌨️ キーボード設定</h3>
+                            <div id="current-keymap" class="current-keymap">
+                                <p>デフォルト (JIS配列)</p>
+                            </div>
+                            <a href="/editor" class="btn btn-edit-keymap">キーマップエディタ</a>
+                            <div class="keymap-presets">
+                                <button class="preset-btn" data-preset="jis">JIS配列</button>
+                                <button class="preset-btn" data-preset="ansi">ANSI配列</button>
+                                <button class="preset-btn" data-preset="dvorak">Dvorak</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 

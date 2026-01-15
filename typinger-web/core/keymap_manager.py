@@ -210,7 +210,7 @@ class KeymapManager:
 
     def create_default_keymap(self, key_count: int = 64) -> Dict:
         """
-        デフォルトキーマップを作成
+        デフォルトキーマップを作成（JIS配列）
         
         Args:
             key_count: キー数
@@ -218,29 +218,151 @@ class KeymapManager:
         Returns:
             Dict: デフォルトキーマップ
         """
-        keys = []
+        return self.create_jis_keymap(key_count)
+
+    def create_jis_keymap(self, key_count: int = 109) -> Dict:
+        """
+        JIS配列キーマップを作成
         
-        # QWERTY配列の基本キーをマップ
-        qwerty_codes = [
-            20, 26, 8, 21, 23,  # Q W E R T
-            28, 24, 12, 18, 19, # Y U I O P
-            4, 22, 7, 9, 10,    # A S D F G
-            11, 15, 16, 14, 13, # H J K L semicolon
-            29, 27, 3, 2, 30,   # Z X C V B
+        Args:
+            key_count: キー数
+            
+        Returns:
+            Dict: JIS配列キーマップ
+        """
+        # JIS配列の標準キー配置（左上からスキャン順）
+        jis_codes = [
+            # ファンクションキー（F1-F12）
+            58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+            # 数字行
+            53, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 45, 46, 42,  # `1-9,0,-,=,Backspace
+            # QWERTYキー行
+            43, 20, 26, 8, 21, 23, 28, 24, 12, 18, 19, 47, 48, 49,    # Tab,Q-P,[,],\
+            # ASFDキー行
+            57, 4, 22, 7, 9, 10, 11, 15, 16, 14, 51, 52, 40,          # Caps,A-L,;,',Enter
+            # Shift行
+            225, 29, 27, 6, 3, 25, 2, 30, 54, 55, 56, 229,            # Shift,Z-M,,,.,/,Shift
+            # 修飾キー行
+            224, 227, 226, 44, 230, 231, 101, 228,                    # Ctrl,GUI,Alt,Space,Alt,GUI,Menu,Ctrl
         ]
         
-        for i in range(key_count):
-            if i < len(qwerty_codes):
-                code = qwerty_codes[i]
-                label = KeymapValidator.get_key_name(code)
-            else:
-                code = 0
-                label = f"Key_{i+1}"
+        keys = []
+        for i in range(min(key_count, len(jis_codes))):
+            code = jis_codes[i]
+            label = KeymapValidator.get_key_name(code)
             
             keys.append({
                 'code': code,
                 'mods': 0,
-                'label': label,
+                'label': label or f'Key_{i+1}',
+            })
+        
+        # 不足分を埋める
+        for i in range(len(jis_codes), key_count):
+            keys.append({
+                'code': 0,
+                'mods': 0,
+                'label': f'Key_{i+1}',
+            })
+        
+        return {
+            'version': 1,
+            'keys': keys,
+        }
+
+    def create_ansi_keymap(self, key_count: int = 104) -> Dict:
+        """
+        ANSI配列（US QWERTY）キーマップを作成
+        
+        Args:
+            key_count: キー数
+            
+        Returns:
+            Dict: ANSI配列キーマップ
+        """
+        # ANSI配列（US QWERTY）
+        ansi_codes = [
+            # ファンクションキー
+            58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+            # 数字行
+            53, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 45, 46, 42,  # `1-9,0,-,=,Backspace
+            # QWERTYキー行
+            43, 20, 26, 8, 21, 23, 28, 24, 12, 18, 19, 47, 48,        # Tab,Q-P,[,]
+            # ASFDキー行
+            57, 4, 22, 7, 9, 10, 11, 15, 16, 14, 51, 52, 40,          # Caps,A-L,;,',Enter
+            # Shift行
+            225, 29, 27, 6, 3, 25, 2, 30, 54, 55, 56, 229,            # Shift,Z-M,,,.,/,Shift
+            # 修飾キー行
+            224, 227, 226, 44, 230, 231, 228,                         # Ctrl,GUI,Alt,Space,Alt,GUI,Ctrl
+        ]
+        
+        keys = []
+        for i in range(min(key_count, len(ansi_codes))):
+            code = ansi_codes[i]
+            label = KeymapValidator.get_key_name(code)
+            
+            keys.append({
+                'code': code,
+                'mods': 0,
+                'label': label or f'Key_{i+1}',
+            })
+        
+        for i in range(len(ansi_codes), key_count):
+            keys.append({
+                'code': 0,
+                'mods': 0,
+                'label': f'Key_{i+1}',
+            })
+        
+        return {
+            'version': 1,
+            'keys': keys,
+        }
+
+    def create_dvorak_keymap(self, key_count: int = 104) -> Dict:
+        """
+        Dvorak配列キーマップを作成
+        
+        Args:
+            key_count: キー数
+            
+        Returns:
+            Dict: Dvorak配列キーマップ
+        """
+        # Dvorak配列
+        dvorak_codes = [
+            # ファンクションキー
+            58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+            # 数字行（QWERTYと同じ）
+            53, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 45, 46, 42,
+            # Dvorak行1: ',.pyfgcrl
+            43, 52, 54, 19, 28, 9, 6, 21, 15, 12,                     # Tab,',,,P,Y,F,G,C,R,L
+            47, 48, 49,                                               # [,],\
+            # Dvorak行2: aoeuidhtns
+            57, 4, 18, 8, 24, 7, 11, 23, 22, 51,                      # Caps,A,O,E,U,I,D,H,T,N,S
+            52, 40,                                                    # ;,Enter
+            # Dvorak行3: ;qjkxbmwvz
+            225, 51, 20, 13, 14, 27, 5, 16, 26, 29, 229,              # Shift,;,Q,J,K,X,B,M,W,V,Z,Shift
+            # 修飾キー行
+            224, 227, 226, 44, 230, 231, 228,                         # Ctrl,GUI,Alt,Space,Alt,GUI,Ctrl
+        ]
+        
+        keys = []
+        for i in range(min(key_count, len(dvorak_codes))):
+            code = dvorak_codes[i]
+            label = KeymapValidator.get_key_name(code)
+            
+            keys.append({
+                'code': code,
+                'mods': 0,
+                'label': label or f'Key_{i+1}',
+            })
+        
+        for i in range(len(dvorak_codes), key_count):
+            keys.append({
+                'code': 0,
+                'mods': 0,
+                'label': f'Key_{i+1}',
             })
         
         return {

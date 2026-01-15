@@ -10,7 +10,53 @@ class TypingerApp {
 
     init() {
         this.loadScenarios();
+        this.setupKeymapPresets();
         this.setupEventListeners();
+    }
+
+    // ========== キーマップ管理 ==========
+    async setupKeymapPresets() {
+        const presetButtons = document.querySelectorAll('.preset-btn');
+        presetButtons.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const preset = e.target.dataset.preset;
+                await this.loadKeymapPreset(preset);
+                
+                // アクティブボタンを更新
+                presetButtons.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+
+        // デフォルトでJISをロード
+        await this.loadKeymapPreset('jis');
+        const jisBtn = document.querySelector('[data-preset="jis"]');
+        if (jisBtn) jisBtn.classList.add('active');
+    }
+
+    async loadKeymapPreset(preset) {
+        try {
+            const response = await fetch(`/api/keymap/presets/${preset}`);
+            const keymap = await response.json();
+            
+            // 現在のキーマップ表示を更新
+            const presetNames = {
+                'jis': 'JIS配列',
+                'ansi': 'ANSI配列',
+                'dvorak': 'Dvorak配列'
+            };
+            
+            const currentKeymapEl = document.getElementById('current-keymap');
+            if (currentKeymapEl) {
+                currentKeymapEl.innerHTML = `<p>${presetNames[preset]}</p>`;
+            }
+            
+            // ローカルストレージに保存
+            localStorage.setItem('currentKeymap', JSON.stringify(keymap));
+            localStorage.setItem('currentKeymapPreset', preset);
+        } catch (error) {
+            console.error('Error loading keymap preset:', error);
+        }
     }
 
     // ========== シナリオ管理 ==========

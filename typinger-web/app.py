@@ -545,10 +545,27 @@ def convert_keymap_format():
 
 @app.route('/api/keymap/default')
 def get_default_keymap():
-    """デフォルトキーマップ（QWERTY）を取得"""
+    """デフォルトキーマップ（JIS配列）を取得"""
     try:
         default_keymap = keymap_manager.create_default_keymap()
         return jsonify(default_keymap)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/keymap/presets/<preset>')
+def get_keymap_preset(preset):
+    """キーマッププリセットを取得"""
+    try:
+        if preset == 'jis':
+            keymap = keymap_manager.create_jis_keymap()
+        elif preset == 'ansi':
+            keymap = keymap_manager.create_ansi_keymap()
+        elif preset == 'dvorak':
+            keymap = keymap_manager.create_dvorak_keymap()
+        else:
+            return jsonify({'error': 'Unknown preset'}), 400
+        
+        return jsonify(keymap)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
