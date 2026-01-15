@@ -101,37 +101,77 @@ class KeymapEditor {
         });
 
         // ========== キーマッピング設定 ==========
+        let mappingMode = null; // 'source' または 'target'
+        let sourceKeyValue = null;
+        let targetKeyValue = null;
+
         // 元のキー選択
         document.getElementById('source-key-display').addEventListener('click', () => {
-            document.getElementById('source-key-options').style.display = 
-                document.getElementById('source-key-options').style.display === 'none' ? 'block' : 'none';
+            console.log('📍 Waiting for source key input...');
+            document.getElementById('source-key-display').style.background = '#fff3cd';
+            document.getElementById('source-key-display').style.borderColor = '#ffc107';
+            document.getElementById('source-key-display').innerHTML = '<span style="color: #ff6b6b; font-weight: bold;">🔴 キー入力待機中...</span>';
+            mappingMode = 'source';
         });
 
         // 変更先のキー選択
         document.getElementById('target-key-display').addEventListener('click', () => {
-            document.getElementById('target-key-options').style.display =
-                document.getElementById('target-key-options').style.display === 'none' ? 'block' : 'none';
+            console.log('🎯 Waiting for target key input...');
+            document.getElementById('target-key-display').style.background = '#d4edda';
+            document.getElementById('target-key-display').style.borderColor = '#28a745';
+            document.getElementById('target-key-display').innerHTML = '<span style="color: #28a745; font-weight: bold;">🟢 キー入力待機中...</span>';
+            mappingMode = 'target';
         });
+
+        // グローバルキーボードリスナー
+        document.addEventListener('keydown', (e) => {
+            if (!mappingMode) return;
+
+            e.preventDefault();
+            const keyName = e.key || 'Unknown';
+            const keyCode = e.keyCode || e.which;
+
+            console.log(`⌨️ Key pressed in ${mappingMode} mode:`, keyName, `(code: ${keyCode})`);
+
+            if (mappingMode === 'source') {
+                sourceKeyValue = keyName;
+                document.getElementById('source-key-display').style.background = 'white';
+                document.getElementById('source-key-display').style.borderColor = '#3498db';
+                document.getElementById('source-key-display').innerHTML = `<span>${keyName}</span>`;
+                console.log(`✅ Source key set: ${keyName}`);
+                mappingMode = null;
+            } else if (mappingMode === 'target') {
+                targetKeyValue = keyName;
+                document.getElementById('target-key-display').style.background = 'white';
+                document.getElementById('target-key-display').style.borderColor = '#2ecc71';
+                document.getElementById('target-key-display').innerHTML = `<span>${keyName}</span>`;
+                console.log(`✅ Target key set: ${keyName}`);
+                mappingMode = null;
+            }
+        }, true);
 
         // マッピング追加ボタン
         document.getElementById('btn-add-mapping').addEventListener('click', () => {
-            const sourceKey = document.getElementById('source-key-input').value.trim();
-            const targetKey = document.getElementById('target-key-input').value.trim();
-
-            if (!sourceKey || !targetKey) {
+            if (!sourceKeyValue || !targetKeyValue) {
                 this.showMessage('元のキーと変更先のキーを指定してください', 'error');
                 return;
             }
 
-            this.addMapping(sourceKey, targetKey);
+            this.addMapping(sourceKeyValue, targetKeyValue);
         });
 
         // クリアボタン
         document.getElementById('btn-clear-mapping').addEventListener('click', () => {
-            document.getElementById('source-key-display').innerHTML = '<span style="color: #999;">ここをクリックして選択</span>';
-            document.getElementById('target-key-display').innerHTML = '<span style="color: #999;">ここをクリックして選択</span>';
-            document.getElementById('source-key-input').value = '';
-            document.getElementById('target-key-input').value = '';
+            document.getElementById('source-key-display').style.background = 'white';
+            document.getElementById('source-key-display').style.borderColor = '#3498db';
+            document.getElementById('source-key-display').innerHTML = '<span style="color: #999;">ここをクリック</span>';
+            document.getElementById('target-key-display').style.background = 'white';
+            document.getElementById('target-key-display').style.borderColor = '#2ecc71';
+            document.getElementById('target-key-display').innerHTML = '<span style="color: #999;">ここをクリック</span>';
+            sourceKeyValue = null;
+            targetKeyValue = null;
+            mappingMode = null;
+            console.log('🗑️ Mapping cleared');
         });
     }
 
@@ -160,12 +200,14 @@ class KeymapEditor {
         mappingsList.appendChild(mappingItem);
 
         // フォームをクリア
-        document.getElementById('source-key-display').innerHTML = '<span style="color: #999;">ここをクリックして選択</span>';
-        document.getElementById('target-key-display').innerHTML = '<span style="color: #999;">ここをクリックして選択</span>';
-        document.getElementById('source-key-input').value = '';
-        document.getElementById('target-key-input').value = '';
-        document.getElementById('source-key-options').style.display = 'none';
-        document.getElementById('target-key-options').style.display = 'none';
+        sourceKeyValue = null;
+        targetKeyValue = null;
+        document.getElementById('source-key-display').style.background = 'white';
+        document.getElementById('source-key-display').style.borderColor = '#3498db';
+        document.getElementById('source-key-display').innerHTML = '<span style="color: #999;">ここをクリック</span>';
+        document.getElementById('target-key-display').style.background = 'white';
+        document.getElementById('target-key-display').style.borderColor = '#2ecc71';
+        document.getElementById('target-key-display').innerHTML = '<span style="color: #999;">ここをクリック</span>';
 
         this.showMessage(`✅ マッピングを追加しました: ${sourceKey} → ${targetKey}`, 'success');
     }

@@ -84,35 +84,31 @@
             <!-- キーマッピング設定パネル -->
             <div class="mapping-panel" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3>🔄 キーマッピング設定</h3>
-                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">元のキーと変更先のキーをクリックして指定します</p>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">下のボックスをクリックしてから、キーボードを押すと自動的に登録されます</p>
 
                 <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center;">
                     <!-- 元のキー選択 -->
                     <div>
-                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">元のキー:</label>
-                        <div id="source-key-display" style="background: white; border: 2px dashed #3498db; padding: 20px; text-align: center; border-radius: 4px; min-height: 50px; display: flex; align-items: center; justify-content: center;">
-                            <span style="color: #999;">ここをクリックして選択</span>
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">📍 元のキー:</label>
+                        <div id="source-key-display" style="background: white; border: 3px solid #3498db; padding: 20px; text-align: center; border-radius: 4px; min-height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 18px; transition: all 0.3s ease;">
+                            <span style="color: #999;">ここをクリック</span>
                         </div>
-                        <div id="source-key-options" style="margin-top: 10px; display: none;">
-                            <input type="text" id="source-key-input" placeholder="キー名を入力" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
+                        <p style="font-size: 11px; color: #666; margin-top: 8px; text-align: center;">キーボードを押してください</p>
                     </div>
 
                     <!-- 矢印 -->
                     <div style="text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #3498db;">→</div>
-                        <button id="btn-clear-mapping" style="margin-top: 10px; padding: 5px 10px; font-size: 12px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">クリア</button>
+                        <div style="font-size: 28px; font-weight: bold; color: #3498db;">⇒</div>
+                        <button id="btn-clear-mapping" style="margin-top: 10px; padding: 8px 12px; font-size: 12px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ クリア</button>
                     </div>
 
                     <!-- 変更先のキー選択 -->
                     <div>
-                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">変更先のキー:</label>
-                        <div id="target-key-display" style="background: white; border: 2px dashed #2ecc71; padding: 20px; text-align: center; border-radius: 4px; min-height: 50px; display: flex; align-items: center; justify-content: center;">
-                            <span style="color: #999;">ここをクリックして選択</span>
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">🎯 変更先のキー:</label>
+                        <div id="target-key-display" style="background: white; border: 3px solid #2ecc71; padding: 20px; text-align: center; border-radius: 4px; min-height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 18px; transition: all 0.3s ease;">
+                            <span style="color: #999;">ここをクリック</span>
                         </div>
-                        <div id="target-key-options" style="margin-top: 10px; display: none;">
-                            <input type="text" id="target-key-input" placeholder="キー名を入力" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        </div>
+                        <p style="font-size: 11px; color: #666; margin-top: 8px; text-align: center;">キーボードを押してください</p>
                     </div>
                 </div>
 
