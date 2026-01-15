@@ -476,19 +476,23 @@ def keymap_editor():
 def get_keys_info():
     """HIDキー情報を取得"""
     try:
+        # HID_KEYSが存在しない場合はデフォルト値を返す
+        hid_keys = getattr(keymap_manager.validator, 'HID_KEYS', {})
+        
         keys_info = {
-            'keys': keymap_manager.validator.HID_KEYS,
+            'ok': True,
+            'keys': hid_keys,
             'modifiers': {
                 'shift': 0x01,
                 'ctrl': 0x02,
                 'alt': 0x04,
                 'gui': 0x08
             },
-            'total_keys': len(keymap_manager.validator.HID_KEYS)
+            'total_keys': len(hid_keys)
         }
         return jsonify(keys_info)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'ok': False, 'error': str(e)}), 500
 
 @app.route('/api/keymap/list')
 def list_keymaps():

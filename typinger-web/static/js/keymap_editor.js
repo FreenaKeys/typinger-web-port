@@ -1,3 +1,8 @@
+// グローバル変数
+let mappingMode = null;
+let sourceKeyValue = null;
+let targetKeyValue = null;
+
 class KeymapEditor {
     constructor() {
         this.currentKeymap = { version: 1, keys: [] };
