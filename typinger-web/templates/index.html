@@ -14,6 +14,7 @@
             <div class="header-links">
                 <a href="/admin" class="header-link">📊 管理画面</a>
                 <a href="/editor" class="header-link">⌨️ キーマップ</a>
+                <a href="/scenario-writer" class="header-link">📝 シナリオ</a>
             </div>
         </header>
 
@@ -221,5 +222,13 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // ページ読み込み時にアプリを初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing app...');
+            window.app = new TypingerApp();
+            console.log('App initialized:', window.app);
+        });
+    </script>
 </body>
 </html>
