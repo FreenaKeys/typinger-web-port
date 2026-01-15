@@ -81,6 +81,54 @@
                 <div class="key-grid" id="key-grid"></div>
             </div>
 
+            <!-- キーマッピング設定パネル -->
+            <div class="mapping-panel" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3>🔄 キーマッピング設定</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">元のキーと変更先のキーをクリックして指定します</p>
+
+                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center;">
+                    <!-- 元のキー選択 -->
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">元のキー:</label>
+                        <div id="source-key-display" style="background: white; border: 2px dashed #3498db; padding: 20px; text-align: center; border-radius: 4px; min-height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #999;">ここをクリックして選択</span>
+                        </div>
+                        <div id="source-key-options" style="margin-top: 10px; display: none;">
+                            <input type="text" id="source-key-input" placeholder="キー名を入力" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+
+                    <!-- 矢印 -->
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #3498db;">→</div>
+                        <button id="btn-clear-mapping" style="margin-top: 10px; padding: 5px 10px; font-size: 12px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">クリア</button>
+                    </div>
+
+                    <!-- 変更先のキー選択 -->
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">変更先のキー:</label>
+                        <div id="target-key-display" style="background: white; border: 2px dashed #2ecc71; padding: 20px; text-align: center; border-radius: 4px; min-height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #999;">ここをクリックして選択</span>
+                        </div>
+                        <div id="target-key-options" style="margin-top: 10px; display: none;">
+                            <input type="text" id="target-key-input" placeholder="キー名を入力" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px; text-align: center;">
+                    <button id="btn-add-mapping" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">✅ このマッピングを追加</button>
+                </div>
+
+                <!-- マッピング一覧 -->
+                <div style="margin-top: 20px;">
+                    <h4>現在のマッピング:</h4>
+                    <div id="mappings-list" style="background: white; padding: 10px; border-radius: 4px; min-height: 50px; max-height: 150px; overflow-y: auto;">
+                        <p style="color: #999; text-align: center;">マッピングがまだありません</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- キー編集パネル -->
             <div class="edit-panel">
                 <h3>キー設定</h3>

@@ -99,6 +99,95 @@ class KeymapEditor {
         document.getElementById('file-upload').addEventListener('change', (e) => {
             this.handleFileUpload(e);
         });
+
+        // ========== キーマッピング設定 ==========
+        // 元のキー選択
+        document.getElementById('source-key-display').addEventListener('click', () => {
+            document.getElementById('source-key-options').style.display = 
+                document.getElementById('source-key-options').style.display === 'none' ? 'block' : 'none';
+        });
+
+        // 変更先のキー選択
+        document.getElementById('target-key-display').addEventListener('click', () => {
+            document.getElementById('target-key-options').style.display =
+                document.getElementById('target-key-options').style.display === 'none' ? 'block' : 'none';
+        });
+
+        // マッピング追加ボタン
+        document.getElementById('btn-add-mapping').addEventListener('click', () => {
+            const sourceKey = document.getElementById('source-key-input').value.trim();
+            const targetKey = document.getElementById('target-key-input').value.trim();
+
+            if (!sourceKey || !targetKey) {
+                this.showMessage('元のキーと変更先のキーを指定してください', 'error');
+                return;
+            }
+
+            this.addMapping(sourceKey, targetKey);
+        });
+
+        // クリアボタン
+        document.getElementById('btn-clear-mapping').addEventListener('click', () => {
+            document.getElementById('source-key-display').innerHTML = '<span style="color: #999;">ここをクリックして選択</span>';
+            document.getElementById('target-key-display').innerHTML = '<span style="color: #999;">ここをクリックして選択</span>';
+            document.getElementById('source-key-input').value = '';
+            document.getElementById('target-key-input').value = '';
+        });
+    }
+
+    addMapping(sourceKey, targetKey) {
+        console.log(`🔄 Adding mapping: ${sourceKey} → ${targetKey}`);
+
+        // キーマップオブジェクトに追加
+        if (!this.currentKeymap.mappings) {
+            this.currentKeymap.mappings = {};
+        }
+
+        this.currentKeymap.mappings[sourceKey] = targetKey;
+
+        // UIに追加
+        const mappingsList = document.getElementById('mappings-list');
+        if (mappingsList.innerHTML.includes('マッピングがまだありません')) {
+            mappingsList.innerHTML = '';
+        }
+
+        const mappingItem = document.createElement('div');
+        mappingItem.style.cssText = 'padding: 8px; margin: 5px 0; background: #f0f0f0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;';
+        mappingItem.innerHTML = `
+            <span><strong>${sourceKey}</strong> → <strong>${targetKey}</strong></span>
+            <button onclick="editor.removeMapping('${sourceKey}')" style="padding: 3px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">削除</button>
+        `;
+        mappingsList.appendChild(mappingItem);
+
+        // フォームをクリア
+        document.getElementById('source-key-display').innerHTML = '<span style="color: #999;">ここをクリックして選択</span>';
+        document.getElementById('target-key-display').innerHTML = '<span style="color: #999;">ここをクリックして選択</span>';
+        document.getElementById('source-key-input').value = '';
+        document.getElementById('target-key-input').value = '';
+        document.getElementById('source-key-options').style.display = 'none';
+        document.getElementById('target-key-options').style.display = 'none';
+
+        this.showMessage(`✅ マッピングを追加しました: ${sourceKey} → ${targetKey}`, 'success');
+    }
+
+    removeMapping(sourceKey) {
+        console.log(`🗑️ Removing mapping: ${sourceKey}`);
+        delete this.currentKeymap.mappings[sourceKey];
+
+        // UI更新
+        const mappingsList = document.getElementById('mappings-list');
+        if (Object.keys(this.currentKeymap.mappings).length === 0) {
+            mappingsList.innerHTML = '<p style="color: #999; text-align: center;">マッピングがまだありません</p>';
+        } else {
+            const items = mappingsList.querySelectorAll('div');
+            items.forEach(item => {
+                if (item.innerHTML.includes(sourceKey)) {
+                    item.remove();
+                }
+            });
+        }
+
+        this.showMessage(`✅ マッピングを削除しました`, 'success');
     }
 
     async loadDefaultKeymap() {
