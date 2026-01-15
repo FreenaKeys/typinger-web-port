@@ -216,6 +216,7 @@ def judge_char(session_id):
         "ok": True,
         "result": result.value,
         "progress": progress,
+        "finished": judge.is_completed()
     })
 
 
@@ -495,11 +496,12 @@ def list_keymaps():
     try:
         keymaps = keymap_manager.list_keymaps()
         return jsonify({
+            'ok': True,
             'keymaps': keymaps,
             'count': len(keymaps)
         })
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'ok': False, 'error': str(e)}), 500
 
 @app.route('/api/keymap/<filename>')
 def get_keymap(filename):

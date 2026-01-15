@@ -224,12 +224,16 @@
             const preset = e.target.value;
             loadKeymap(preset);
             
+            // sessionStorage に保存
+            sessionStorage.setItem('selectedKeymap', preset);
+            console.log('💾 Keymap saved to sessionStorage:', preset);
+            
             const presetNames = {
                 'jis': 'JIS配列',
                 'ansi': 'ANSI配列',
                 'dvorak': 'Dvorak配列'
             };
-            document.getElementById('current-keymap-display').textContent = presetNames[preset];
+            document.getElementById('current-keymap-display').textContent = presetNames[preset] || preset;
         });
 
         // 初期キーマップ読み込み
@@ -343,18 +347,19 @@
                         showResultScreen(data);
                     } else if (data.progress !== undefined) {
                         // 進捗更新
-                        const progressText = typeof data.progress === 'string' ? data.progress : data.progress.remaining || '';
-                        currentProgress = progressText;
-                        
-                        document.getElementById('rubi-remaining').textContent = progressText;
-                        document.getElementById('rubi-progress').textContent = `✅ 入力済み: ${(TARGET_RUBI.length - progressText.length)} 文字`;
-                        console.log('📍 Progress:', progressText);
-                        
-                        // 進捗が空の場合は完了
-                        if (progressText === '') {
-                            console.log('🎉 All characters completed!');
-                            setTimeout(() => showResultScreen({correct: correct, errors: errors}), 500);
+                        let remainingRubi = '';
+                        if (typeof data.progress === 'string') {
+                            remainingRubi = data.progress;
+                        } else if (data.progress.remaining_rubi !== undefined) {
+                            remainingRubi = data.progress.remaining_rubi;
                         }
+                        
+                        currentProgress = remainingRubi;
+                        document.getElementById('rubi-remaining').textContent = remainingRubi;
+                        
+                        const completedCount = TARGET_RUBI.length - remainingRubi.length;
+                        document.getElementById('rubi-progress').textContent = `✅ 入力済み: ${completedCount} 文字`;
+                        console.log('📍 Progress:', remainingRubi, `(Completed: ${completedCount}/${TARGET_RUBI.length})`);
                     }
                 }
             } catch (error) {
