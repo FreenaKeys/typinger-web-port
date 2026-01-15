@@ -29,6 +29,33 @@
                             <p class="section-desc">下のシナリオをクリックして、タイピング練習をはじめます</p>
                             <div id="scenario-list" class="scenario-list">
                                 <!-- 動的に生成：シナリオカード + タイピング開始ボタン -->
+                                <!-- テスト用サンプルカード -->
+                                <div class="scenario-item">
+                                    <div class="scenario-header">
+                                        <h3 class="scenario-title">日本語基礎</h3>
+                                        <div class="scenario-badge">50 問</div>
+                                    </div>
+                                    <div class="scenario-info">
+                                        <p>📄 ファイル: <code>beginner.json</code></p>
+                                    </div>
+                                    <button class="btn btn-scenario-play">
+                                        <span class="btn-icon">▶</span>
+                                        <span class="btn-text">タイピング開始</span>
+                                    </button>
+                                </div>
+                                <div class="scenario-item">
+                                    <div class="scenario-header">
+                                        <h3 class="scenario-title">日常会話</h3>
+                                        <div class="scenario-badge">75 問</div>
+                                    </div>
+                                    <div class="scenario-info">
+                                        <p>📄 ファイル: <code>daily.json</code></p>
+                                    </div>
+                                    <button class="btn btn-scenario-play">
+                                        <span class="btn-icon">▶</span>
+                                        <span class="btn-text">タイピング開始</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -222,13 +249,5 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
-        // ページ読み込み時にアプリを初期化
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded, initializing app...');
-            window.app = new TypingerApp();
-            console.log('App initialized:', window.app);
-        });
-    </script>
 </body>
 </html>

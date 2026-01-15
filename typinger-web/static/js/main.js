@@ -1,4 +1,5 @@
 // main.js - Typinger Web フロントエンド
+console.log('✅ main.js loaded!');
 
 class TypingerApp {
     constructor() {
@@ -207,6 +208,10 @@ class TypingerApp {
     }
 
     displayTypingScreen(targetText, targetRubi) {
+        console.log(`🎨 [displayTypingScreen] Switching to typing screen...`);
+        console.log(`  Target text: "${targetText}"`);
+        console.log(`  Target rubi: "${targetRubi}"`);
+        
         // 画面を切り替え
         this.switchScreen('typing-screen');
         
@@ -218,6 +223,8 @@ class TypingerApp {
         const input = document.getElementById('typing-input');
         input.value = '';
         input.focus();
+        
+        console.log(`✅ Typing screen ready! Focus on input field.`);
     }
 
     // ========== タイピング処理 ==========
@@ -397,6 +404,8 @@ class TypingerApp {
 
     // ========== ユーティリティ ==========
     switchScreen(screenId) {
+        console.log(`🔄 [switchScreen] Switching to: ${screenId}`);
+        
         // すべての画面を非表示
         document.querySelectorAll('.screen').forEach(screen => {
             screen.classList.add('hidden');
@@ -408,9 +417,25 @@ class TypingerApp {
         if (screen) {
             screen.classList.remove('hidden');
             screen.classList.add('active');
+            console.log(`✅ Screen switched to: ${screenId}`);
+        } else {
+            console.error(`❌ Screen not found: ${screenId}`);
         }
     }
 }
+
+// ========== アプリ初期化 ==========
+// ページロード時にアプリを初期化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('📍 DOMContentLoaded event fired');
+        window.app = new TypingerApp();
+    });
+} else {
+    console.log('📍 DOM already loaded, initializing immediately');
+    window.app = new TypingerApp();
+}
+
 
 // ページロード時に初期化
 document.addEventListener('DOMContentLoaded', () => {
