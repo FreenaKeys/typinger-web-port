@@ -10,11 +10,14 @@ class TypingerApp {
     }
 
     init() {
-        console.log('Initializing app...');
+        console.log('🟢 Initializing Typinger App...');
+        console.log('Step 1: Loading scenarios...');
         this.loadScenarios();
+        console.log('Step 2: Setting up keymap presets...');
         this.setupKeymapPresets();
+        console.log('Step 3: Setting up event listeners...');
         this.setupEventListeners();
-        console.log('App initialization complete!');
+        console.log('✅ App initialization complete!');
     }
 
     // ========== キーマップ管理 ==========
@@ -65,33 +68,43 @@ class TypingerApp {
     // ========== シナリオ管理 ==========
     async loadScenarios() {
         try {
-            console.log('Loading scenarios...');
+            console.log('🔄 Fetching /api/scenarios...');
             const response = await fetch('/api/scenarios');
-            const data = await response.json();
+            console.log('✅ Response received:', response.status);
             
-            console.log('✓ Scenarios loaded:', data);
+            const data = await response.json();
+            console.log('📋 API Response:', data);
             
             if (data.ok && data.scenarios) {
-                console.log(`✓ Found ${data.scenarios.length} scenarios`);
+                console.log(`✅ Found ${data.scenarios.length} scenarios`);
+                console.log('Scenarios:', data.scenarios);
                 this.displayScenarios(data.scenarios);
             } else {
-                console.error('✗ Failed to load scenarios:', data.error);
+                console.error('❌ API returned error:', data.error);
                 this.displayScenarios([]);
             }
         } catch (error) {
-            console.error('✗ Error loading scenarios:', error);
+            console.error('❌ Error loading scenarios:', error);
             this.displayScenarios([]);
         }
     }
 
     displayScenarios(scenarios) {
+        console.log('🎨 Starting displayScenarios()...');
         const scenarioList = document.getElementById('scenario-list');
+        console.log('📍 Found scenario-list element:', scenarioList);
+        
+        if (!scenarioList) {
+            console.error('❌ scenario-list element not found!');
+            return;
+        }
+        
         scenarioList.innerHTML = '';
         
-        console.log('Displaying scenarios:', scenarios);
+        console.log('📊 Displaying scenarios:', scenarios);
         
         if (!scenarios || scenarios.length === 0) {
-            console.warn('⚠ No scenarios to display');
+            console.warn('⚠️ No scenarios to display');
             scenarioList.innerHTML = `
                 <div class="no-scenarios-message">
                     <p>📋 シナリオが見つかりません</p>
@@ -103,7 +116,10 @@ class TypingerApp {
             return;
         }
         
+        console.log(`✅ Rendering ${scenarios.length} scenario cards...`);
+        
         scenarios.forEach((scenario, index) => {
+            console.log(`  [${index}] Creating card for: ${scenario.title}`);
             const item = document.createElement('div');
             item.className = 'scenario-item';
             item.setAttribute('role', 'button');
@@ -124,7 +140,10 @@ class TypingerApp {
             
             // ボタンをクリック
             const btn = item.querySelector('.btn-scenario-play');
-            const handleStart = () => this.startSession(scenario.filename);
+            const handleStart = () => {
+                console.log(`🎬 Starting session with scenario: ${scenario.filename}`);
+                this.startSession(scenario.filename);
+            };
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 handleStart();
@@ -142,27 +161,43 @@ class TypingerApp {
             item.addEventListener('click', handleStart);
             
             scenarioList.appendChild(item);
+            console.log(`  ✅ Card created for: ${scenario.title}`);
         });
         
-        console.log(`✓ Rendered ${scenarios.length} scenario cards`);
+        console.log(`✅ Finished rendering ${scenarios.length} scenario cards`);
     }
 
     // ========== セッション管理 ==========
     async startSession(scenarioFile) {
         try {
+            console.log(`🎬 [startSession] Starting with scenario: ${scenarioFile}`);
+            console.log(`📤 Sending POST to /api/session/start...`);
+            
             const response = await fetch('/api/session/start', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ scenario_file: scenarioFile })
             });
+            
+            console.log(`✅ Response received: ${response.status}`);
             const data = await response.json();
+            console.log(`📋 API Response:`, data);
             
             if (data.ok) {
+                console.log(`✅ Session created: ${data.session_id}`);
                 this.sessionId = data.session_id;
                 this.currentScenario = scenarioFile;
                 this.typingStartTime = Date.now();
+                console.log(`🎨 Switching to typing screen...`);
                 this.displayTypingScreen(data.target_text, data.target_rubi);
+                console.log(`✅ Typing screen displayed!`);
             } else {
+                console.error(`❌ API error:`, data.error);
+            }
+        } catch (error) {
+            console.error(`❌ Error in startSession:`, error);
+        }
+    }
                 alert('セッション開始エラー: ' + data.error);
             }
         } catch (error) {
