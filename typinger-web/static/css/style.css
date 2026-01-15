@@ -103,9 +103,10 @@ header h1 {
 /* Home Container */
 .home-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 30px;
     animation: fadeIn 0.3s ease;
+    align-items: start;
 }
 
 .home-left {
@@ -114,55 +115,84 @@ header h1 {
 
 .home-right {
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 20px;
+}
+
+.scenarios-section {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.scenarios-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-size: 1.8em;
+}
+
+.section-desc {
+    color: #7f8c8d;
+    margin-bottom: 25px;
+    font-size: 0.95em;
+}
+
+/* Panel共通スタイル */
+.panel {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.panel h3 {
+    margin: 0 0 20px 0;
+    color: var(--primary-color);
+    font-size: 1.2em;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 10px;
 }
 
 /* Keymap Quick Access */
 .keymap-quick-access {
-    background: white;
-    border: 2px solid var(--accent-color);
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: var(--shadow);
-}
-
-.keymap-quick-access h3 {
-    margin-bottom: 20px;
-    color: var(--primary-color);
-    font-size: 1.3em;
-    border-bottom: 2px solid var(--accent-color);
-    padding-bottom: 10px;
+    border-left: 4px solid var(--accent-color);
 }
 
 .current-keymap {
     background: #f0f8ff;
     border: 1px solid var(--accent-color);
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 15px;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 12px;
     text-align: center;
 }
 
 .current-keymap p {
     font-weight: 600;
     color: var(--accent-color);
-    font-size: 1.1em;
+    font-size: 0.95em;
+    margin: 0;
 }
 
 .btn-edit-keymap {
     display: block;
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background: var(--accent-color);
     color: white;
     text-align: center;
     text-decoration: none;
     border-radius: 4px;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     transition: all 0.2s;
     border: none;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 0.9em;
 }
 
 .btn-edit-keymap:hover {
@@ -173,19 +203,19 @@ header h1 {
 
 .keymap-presets {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
 }
 
 .preset-btn {
-    padding: 10px;
+    padding: 8px 10px;
     background: #ecf0f1;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
     transition: all 0.2s;
-    font-size: 0.95em;
+    font-size: 0.85em;
 }
 
 .preset-btn:hover {
@@ -198,42 +228,120 @@ header h1 {
     background: var(--accent-color);
     color: white;
     border-color: var(--accent-color);
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+
+/* Typing Info Panel */
+.typing-info-panel {
+    border-left: 4px solid var(--success-color);
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.info-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.info-icon {
+    font-size: 1.5em;
+    min-width: 30px;
+    text-align: center;
+}
+
+.info-text {
+    flex: 1;
+}
+
+.info-text strong {
+    display: block;
+    color: var(--primary-color);
+    font-size: 0.9em;
+    margin-bottom: 3px;
+}
+
+.info-text p {
+    font-size: 0.8em;
+    color: #7f8c8d;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    padding: 8px 12px;
+    font-size: 0.85em;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.btn-small {
+    width: 100%;
 }
 
 /* Scenario Select */
 .scenario-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 15px;
-    margin-bottom: 40px;
 }
 
 .scenario-item {
     padding: 20px;
-    background: white;
+    background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
     border: 2px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.scenario-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: var(--accent-color);
+    transition: left 0.3s ease;
 }
 
 .scenario-item:hover {
     border-color: var(--accent-color);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.scenario-item:hover::before {
+    left: 100%;
+}
+
+.scenario-item:active {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .scenario-title {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 10px;
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 8px;
     color: var(--primary-color);
 }
 
 .scenario-info {
-    font-size: 0.9em;
+    font-size: 0.85em;
     color: #7f8c8d;
+    line-height: 1.5;
 }
 
 /* Typing Screen */
@@ -539,12 +647,51 @@ footer {
         gap: 20px;
     }
 
+    .home-right {
+        position: static;
+    }
+
     .scenario-list {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
+
+    .scenario-item {
+        padding: 15px;
+    }
+
+    .scenario-title {
+        font-size: 1em;
     }
 
     .keymap-presets {
         grid-template-columns: repeat(3, 1fr);
+    }
+
+    .preset-btn {
+        padding: 8px;
+        font-size: 0.8em;
+    }
+
+    .info-content {
+        gap: 8px;
+    }
+
+    .info-item {
+        gap: 8px;
+    }
+
+    .info-icon {
+        font-size: 1.2em;
+        min-width: 25px;
+    }
+
+    .info-text strong {
+        font-size: 0.8em;
+    }
+
+    .info-text p {
+        font-size: 0.75em;
     }
 
 }

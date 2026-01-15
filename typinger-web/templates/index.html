@@ -21,26 +21,67 @@
             <!-- シナリオ選択画面 -->
             <section id="scenario-select" class="screen">
                 <div class="home-container">
+                    <!-- 左側：シナリオリスト -->
                     <div class="home-left">
-                        <h2>シナリオを選択</h2>
-                        <div id="scenario-list" class="scenario-list">
-                            <!-- 動的に生成 -->
+                        <div class="scenarios-section">
+                            <h2>🎯 シナリオを選択</h2>
+                            <p class="section-desc">タイピング練習をはじめましょう</p>
+                            <div id="scenario-list" class="scenario-list">
+                                <!-- 動的に生成 -->
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- キーマップクイックアクセス -->
+                    <!-- 右側：情報パネル -->
                     <div class="home-right">
-                        <div class="keymap-quick-access">
+                        <!-- キーボード設定 -->
+                        <div class="keymap-quick-access panel">
                             <h3>⌨️ キーボード設定</h3>
                             <div id="current-keymap" class="current-keymap">
                                 <p>デフォルト (JIS配列)</p>
                             </div>
-                            <a href="/editor" class="btn btn-edit-keymap">キーマップエディタ</a>
+                            <a href="/editor" class="btn btn-edit-keymap">詳細設定</a>
                             <div class="keymap-presets">
-                                <button class="preset-btn" data-preset="jis">JIS配列</button>
-                                <button class="preset-btn" data-preset="ansi">ANSI配列</button>
+                                <button class="preset-btn" data-preset="jis">JIS</button>
+                                <button class="preset-btn" data-preset="ansi">ANSI</button>
                                 <button class="preset-btn" data-preset="dvorak">Dvorak</button>
                             </div>
+                        </div>
+
+                        <!-- タイピング情報 -->
+                        <div class="typing-info-panel panel">
+                            <h3>💡 Typingerについて</h3>
+                            <div class="info-content">
+                                <div class="info-item">
+                                    <span class="info-icon">📝</span>
+                                    <div class="info-text">
+                                        <strong>複数のシナリオ</strong>
+                                        <p>初級から上級まで、様々な難易度のタイピング練習が利用可能</p>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-icon">📊</span>
+                                    <div class="info-text">
+                                        <strong>詳細な統計</strong>
+                                        <p>正解率、入力速度、ミスなど、リアルタイムで表示</p>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-icon">⌨️</span>
+                                    <div class="info-text">
+                                        <strong>カスタマイズ可能</strong>
+                                        <p>キーボード配列を自由に設定してカスタマイズ</p>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-icon">📈</span>
+                                    <div class="info-text">
+                                        <strong>成績管理</strong>
+                                        <p>過去の成績は管理画面で確認・分析できます</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="/admin" class="btn btn-secondary btn-small">📊 成績確認</a>
                         </div>
                     </div>
                 </div>
