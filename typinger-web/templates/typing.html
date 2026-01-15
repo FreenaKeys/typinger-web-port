@@ -135,7 +135,16 @@
         async function loadKeymap(preset) {
             try {
                 console.log(`⌨️ Loading keymap: ${preset}`);
-                const response = await fetch(`/api/keymap/presets/${preset}`);
+                
+                // プリセットかカスタムかを判定
+                let response;
+                if (['jis', 'ansi', 'dvorak'].includes(preset)) {
+                    response = await fetch(`/api/keymap/presets/${preset}`);
+                } else {
+                    // カスタムキーマップ
+                    response = await fetch(`/api/keymap/${preset}`);
+                }
+                
                 const data = await response.json();
                 
                 if (data.ok) {
@@ -148,13 +157,65 @@
                         'dvorak': 'Dvorak配列'
                     };
                     
-                    document.getElementById('keymap-info').textContent = `✅ 使用中: ${presetNames[preset]}`;
+                    const displayName = presetNames[preset] || preset;
+                    document.getElementById('keymap-info').textContent = `✅ 使用中: ${displayName}`;
                     console.log(`✅ Keymap loaded: ${preset}`, keymapData);
                 } else {
                     console.error('❌ Failed to load keymap:', data.error);
                 }
             } catch (error) {
                 console.error('❌ Error loading keymap:', error);
+            }
+        }
+
+        // カスタムキーマップをセレクトに追加
+        async function loadCustomKeymaps() {
+            try {
+                console.log('📂 Loading custom keymaps...');
+                const response = await fetch('/api/keymap/list');
+                const data = await response.json();
+                
+                if (data.ok && data.keymaps) {
+                    const customKeymaps = data.keymaps.filter(km => 
+                        km !== 'jis.json' && km !== 'ansi.json' && km !== 'dvorak.json'
+                    );
+                    
+                    if (customKeymaps.length > 0) {
+                        const select = document.getElementById('keymap-select');
+                        
+                        // 「カスタムキーマップ」セクションを追加
+                        let hasCustomGroup = false;
+                        for (let option of select.options) {
+                            if (option.textContent === '--- カスタムキーマップ ---') {
+                                hasCustomGroup = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!hasCustomGroup && customKeymaps.length > 0) {
+                            // グループセパレータ
+                            const separator = document.createElement('option');
+                            separator.textContent = '--- カスタムキーマップ ---';
+                            separator.disabled = true;
+                            select.appendChild(separator);
+                        }
+                        
+                        // カスタムキーマップを追加
+                        customKeymaps.forEach(km => {
+                            const keymapName = km.replace('.json', '');
+                            const option = document.createElement('option');
+                            option.value = keymapName;
+                            option.textContent = `📌 ${keymapName}`;
+                            select.appendChild(option);
+                        });
+                        
+                        console.log(`✅ Loaded ${customKeymaps.length} custom keymaps`);
+                    }
+                } else {
+                    console.log('ℹ️ No custom keymaps available');
+                }
+            } catch (error) {
+                console.error('❌ Error loading custom keymaps:', error);
             }
         }
 
@@ -174,12 +235,18 @@
         // 初期キーマップ読み込み
         loadKeymap('jis');
         
+        // カスタムキーマップをセレクトに追加
+        loadCustomKeymaps();
+        
         // セッションストレージから keymap を読み込み
         const savedKeymap = sessionStorage.getItem('selectedKeymap');
         if (savedKeymap) {
             console.log('💾 Loading saved keymap:', savedKeymap);
             loadKeymap(savedKeymap);
-            document.getElementById('keymap-select').value = savedKeymap;
+            // setTimeout でセレクトが更新されるまで待つ
+            setTimeout(() => {
+                document.getElementById('keymap-select').value = savedKeymap;
+            }, 100);
         }
         console.log('  Target Rubi:', TARGET_RUBI);
 
