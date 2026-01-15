@@ -96,6 +96,35 @@ def start_session():
     })
 
 
+@app.route('/typing/<scenario_file>')
+def typing_page(scenario_file):
+    """GETでタイピング画面に移動（JavaScriptなしオプション）"""
+    # シナリオから文を取得
+    sentence_data = scenario_manager.get_first_sentence(scenario_file)
+    if not sentence_data:
+        return render_template('error.html', error=f"Scenario not found: {scenario_file}"), 404
+    
+    target_text, target_rubi = sentence_data
+    
+    # セッションを作成
+    session_id = f"session_{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+    
+    sessions[session_id] = {
+        'scenario_file': scenario_file,
+        'target_text': target_text,
+        'target_rubi': target_rubi,
+        'judge': TypingJudge(target_text, target_rubi),
+        'stats_calculator': StatisticsCalculator(),
+        'events': [],
+        'start_time': datetime.now(),
+    }
+    
+    return render_template('typing.html', 
+                          session_id=session_id,
+                          target_text=target_text,
+                          target_rubi=target_rubi)
+
+
 @app.route('/api/session/<session_id>/progress', methods=['GET'])
 def get_progress(session_id):
     """セッションの進捗を取得"""

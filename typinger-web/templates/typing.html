@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typinger - タイピング</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Typinger</h1>
+            <p class="subtitle">Web版 タイピング練習ソフト</p>
+        </header>
+
+        <main>
+            <!-- タイピング画面 -->
+            <section id="typing-screen" class="screen active">
+                <div class="typing-container">
+                    <!-- 目標テキスト表示 -->
+                    <div class="target-text-box">
+                        <p class="label">目標テキスト</p>
+                        <p id="target-text" class="target-text">{{ target_text }}</p>
+                    </div>
+
+                    <!-- ルビ（ローマ字）表示 -->
+                    <div class="rubi-box">
+                        <p class="label">ローマ字入力</p>
+                        <p id="rubi-remaining" class="rubi-remaining">{{ target_rubi }}</p>
+                    </div>
+
+                    <!-- 入力フィールド -->
+                    <div class="input-box">
+                        <input type="text" id="typing-input" class="typing-input" placeholder="ここに入力します" autofocus>
+                    </div>
+
+                    <!-- 統計情報 -->
+                    <div class="stats-box">
+                        <table class="stats-table">
+                            <tr>
+                                <td>正解:</td>
+                                <td id="stat-correct">0</td>
+                                <td>ミス:</td>
+                                <td id="stat-errors">0</td>
+                            </tr>
+                            <tr>
+                                <td>成功率:</td>
+                                <td id="stat-accuracy">0%</td>
+                                <td>経過時間:</td>
+                                <td id="stat-time">0s</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 操作ボタン -->
+                    <div class="button-box">
+                        <button id="btn-finish" class="btn btn-primary">完了</button>
+                        <button id="btn-escape" class="btn btn-secondary">中止</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Typinger Web版 - オープンソース タイピング練習ソフト</p>
+        </footer>
+    </div>
+
+    <script>
+        // セッション情報
+        const SESSION_ID = '{{ session_id }}';
+        const TARGET_TEXT = '{{ target_text }}';
+        const TARGET_RUBI = '{{ target_rubi }}';
+
+        console.log('🎬 Typing page loaded');
+        console.log('  Session ID:', SESSION_ID);
+        console.log('  Target:', TARGET_TEXT);
+
+        // タイピング入力処理
+        document.getElementById('typing-input').addEventListener('keydown', async (e) => {
+            const char = e.key;
+
+            // Backspace処理
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                const input = document.getElementById('typing-input');
+                input.value = input.value.slice(0, -1);
+                return;
+            }
+
+            // 制御文字は無視
+            if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+            try {
+                const response = await fetch(`/api/session/${SESSION_ID}/judge_char`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ char: char, timestamp: Date.now() })
+                });
+                const data = await response.json();
+                console.log('Judge result:', data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        // 完了ボタン
+        document.getElementById('btn-finish').addEventListener('click', async () => {
+            const response = await fetch(`/api/session/${SESSION_ID}/finish`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            if (data.ok) {
+                window.location.href = '/';
+            }
+        });
+
+        // 中止ボタン
+        document.getElementById('btn-escape').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

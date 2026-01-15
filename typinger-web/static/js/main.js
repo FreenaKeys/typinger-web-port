@@ -121,6 +121,12 @@ class TypingerApp {
         
         scenarios.forEach((scenario, index) => {
             console.log(`  [${index}] Creating card for: ${scenario.title}`);
+            
+            // リンク要素を作成（JavaScriptなしで動作）
+            const link = document.createElement('a');
+            link.href = `/typing/${scenario.filename}`;
+            link.style.textDecoration = 'none';
+            
             const item = document.createElement('div');
             item.className = 'scenario-item';
             item.setAttribute('role', 'button');
@@ -139,14 +145,16 @@ class TypingerApp {
                 </button>
             `;
             
+            link.appendChild(item);
+            
             // ボタンをクリック
             const btn = item.querySelector('.btn-scenario-play');
             const handleStart = () => {
                 console.log(`🎬 Starting session with scenario: ${scenario.filename}`);
-                this.startSession(scenario.filename);
+                window.location.href = `/typing/${scenario.filename}`;
             };
             btn.addEventListener('click', (e) => {
-                e.stopPropagation();
+                e.preventDefault();
                 handleStart();
             });
             
@@ -161,7 +169,7 @@ class TypingerApp {
             // カード全体をクリック
             item.addEventListener('click', handleStart);
             
-            scenarioList.appendChild(item);
+            scenarioList.appendChild(link);
             console.log(`  ✅ Card created for: ${scenario.title}`);
         });
         
@@ -429,12 +437,19 @@ class TypingerApp {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         console.log('📍 DOMContentLoaded event fired');
-        window.app = new TypingerApp();
+        // 3秒後に初期化（テスト用）
+        setTimeout(() => {
+            window.app = new TypingerApp();
+        }, 3000);
     });
 } else {
     console.log('📍 DOM already loaded, initializing immediately');
-    window.app = new TypingerApp();
+    // 3秒後に初期化（テスト用）
+    setTimeout(() => {
+        window.app = new TypingerApp();
+    }, 3000);
 }
+
 
 
 // ページロード時に初期化
