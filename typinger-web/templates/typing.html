@@ -17,6 +17,19 @@
             <!-- タイピング画面 -->
             <section id="typing-screen" class="screen active">
                 <div class="typing-container">
+                    <!-- キーマップ設定 -->
+                    <div class="keymap-setting" style="margin-bottom: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+                        <label for="keymap-select" style="display: block; margin-bottom: 10px; font-weight: bold;">
+                            ⌨️ キーボード配列:
+                        </label>
+                        <select id="keymap-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px;">
+                            <option value="jis">JIS配列 (日本語)</option>
+                            <option value="ansi">ANSI配列</option>
+                            <option value="dvorak">Dvorak配列</option>
+                        </select>
+                        <p id="keymap-info" style="margin-top: 10px; font-size: 12px; color: #666;">デフォルト: JIS配列</p>
+                    </div>
+
                     <!-- 目標テキスト表示 -->
                     <div class="target-text-box">
                         <p class="label">目標テキスト</p>
@@ -31,6 +44,9 @@
 
                     <!-- 入力フィールド -->
                     <div class="input-box">
+                        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                            現在のキーマップ: <span id="current-keymap-display">JIS配列</span>
+                        </p>
                         <input type="text" id="typing-input" class="typing-input" placeholder="ここに入力します" autofocus>
                     </div>
 
@@ -59,6 +75,36 @@
                     </div>
                 </div>
             </section>
+
+            <!-- 結果画面 -->
+            <section id="result-screen" class="screen hidden">
+                <div class="typing-container">
+                    <h2>完了しました！</h2>
+                    <div class="result-box">
+                        <table class="result-table">
+                            <tr>
+                                <td>正解数:</td>
+                                <td id="result-correct">0</td>
+                            </tr>
+                            <tr>
+                                <td>ミス数:</td>
+                                <td id="result-errors">0</td>
+                            </tr>
+                            <tr>
+                                <td>成功率:</td>
+                                <td id="result-accuracy">0%</td>
+                            </tr>
+                            <tr>
+                                <td>所要時間:</td>
+                                <td id="result-duration">0秒</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="button-box">
+                        <button id="btn-home" class="btn btn-primary">ホームに戻る</button>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <footer>
@@ -67,59 +113,208 @@
     </div>
 
     <script>
-        // セッション情報
+        // ========== グローバル変数 ==========
         const SESSION_ID = '{{ session_id }}';
         const TARGET_TEXT = '{{ target_text }}';
         const TARGET_RUBI = '{{ target_rubi }}';
+        
+        let startTime = Date.now();
+        let correct = 0;
+        let errors = 0;
+        let currentProgress = '';
+        let currentKeymap = 'jis';
+        let keymapData = null;
 
         console.log('🎬 Typing page loaded');
         console.log('  Session ID:', SESSION_ID);
-        console.log('  Target:', TARGET_TEXT);
+        console.log('  Target Text:', TARGET_TEXT);
+        console.log('  Target Rubi:', TARGET_RUBI);
 
-        // タイピング入力処理
+        // ========== キーマップ処理 ==========
+        async function loadKeymap(preset) {
+            try {
+                console.log(`⌨️ Loading keymap: ${preset}`);
+                const response = await fetch(`/api/keymap/presets/${preset}`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    keymapData = data.keymap;
+                    currentKeymap = preset;
+                    
+                    const presetNames = {
+                        'jis': 'JIS配列 (日本語)',
+                        'ansi': 'ANSI配列',
+                        'dvorak': 'Dvorak配列'
+                    };
+                    
+                    document.getElementById('keymap-info').textContent = `✅ 使用中: ${presetNames[preset]}`;
+                    console.log(`✅ Keymap loaded: ${preset}`, keymapData);
+                } else {
+                    console.error('❌ Failed to load keymap:', data.error);
+                }
+            } catch (error) {
+                console.error('❌ Error loading keymap:', error);
+            }
+        }
+
+        // キーマップ選択の変更イベント
+        document.getElementById('keymap-select').addEventListener('change', (e) => {
+            const preset = e.target.value;
+            loadKeymap(preset);
+            
+            const presetNames = {
+                'jis': 'JIS配列',
+                'ansi': 'ANSI配列',
+                'dvorak': 'Dvorak配列'
+            };
+            document.getElementById('current-keymap-display').textContent = presetNames[preset];
+        });
+
+        // 初期キーマップ読み込み
+        loadKeymap('jis');
+        console.log('  Target Rubi:', TARGET_RUBI);
+
+        // ========== UI更新関数 ==========
+        function updateStats() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const total = correct + errors;
+            const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+            document.getElementById('stat-correct').textContent = correct;
+            document.getElementById('stat-errors').textContent = errors;
+            document.getElementById('stat-accuracy').textContent = accuracy + '%';
+            document.getElementById('stat-time').textContent = elapsed + 's';
+        }
+
+        function showResultScreen(result) {
+            console.log('📊 Showing result screen:', result);
+            
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const accuracy = result.accuracy || 0;
+
+            document.getElementById('result-correct').textContent = result.correct || 0;
+            document.getElementById('result-errors').textContent = result.errors || 0;
+            document.getElementById('result-accuracy').textContent = accuracy + '%';
+            document.getElementById('result-duration').textContent = elapsed + '秒';
+
+            // 画面切り替え
+            document.getElementById('typing-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+        }
+
+        // ========== キー入力処理 ==========
         document.getElementById('typing-input').addEventListener('keydown', async (e) => {
             const char = e.key;
+            const input = document.getElementById('typing-input');
 
             // Backspace処理
             if (e.key === 'Backspace') {
                 e.preventDefault();
-                const input = document.getElementById('typing-input');
                 input.value = input.value.slice(0, -1);
+                return;
+            }
+
+            // Enterキーで完了
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                console.log('✅ Enter pressed - finishing session');
+                finishSession();
                 return;
             }
 
             // 制御文字は無視
             if (e.ctrlKey || e.altKey || e.metaKey) return;
 
+            // 通常のキー入力
+            console.log('⌨️ Key pressed:', char);
+
             try {
+                const timestamp = Date.now() - startTime;
                 const response = await fetch(`/api/session/${SESSION_ID}/judge_char`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ char: char, timestamp: Date.now() })
+                    body: JSON.stringify({ 
+                        char: char, 
+                        timestamp: timestamp,
+                        keymap: currentKeymap
+                    })
                 });
+
+                if (!response.ok) {
+                    console.error('❌ API error:', response.status);
+                    return;
+                }
+
                 const data = await response.json();
-                console.log('Judge result:', data);
+                console.log('📋 Judge result:', data);
+
+                if (data.ok) {
+                    // 結果を反映
+                    if (data.correct) {
+                        correct++;
+                        console.log('✅ Correct! Total:', correct);
+                    } else {
+                        errors++;
+                        console.log('❌ Error! Total:', errors);
+                    }
+
+                    // UI更新
+                    updateStats();
+
+                    // 完了チェック
+                    if (data.finished) {
+                        console.log('🎉 Session finished!');
+                        showResultScreen(data);
+                    } else if (data.progress) {
+                        // 進捗更新
+                        currentProgress = data.progress;
+                        document.getElementById('rubi-remaining').textContent = data.progress;
+                    }
+                }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('❌ Error:', error);
             }
         });
 
-        // 完了ボタン
-        document.getElementById('btn-finish').addEventListener('click', async () => {
-            const response = await fetch(`/api/session/${SESSION_ID}/finish`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await response.json();
-            if (data.ok) {
+        // ========== ボタン処理 ==========
+        async function finishSession() {
+            try {
+                const response = await fetch(`/api/session/${SESSION_ID}/finish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                console.log('✅ Finish response:', data);
+
+                if (data.ok) {
+                    showResultScreen(data);
+                }
+            } catch (error) {
+                console.error('❌ Finish error:', error);
+            }
+        }
+
+        document.getElementById('btn-finish').addEventListener('click', () => {
+            console.log('🔴 Finish button clicked');
+            finishSession();
+        });
+
+        document.getElementById('btn-escape').addEventListener('click', () => {
+            console.log('🔴 Escape button clicked');
+            if (confirm('タイピングを中止しますか？')) {
                 window.location.href = '/';
             }
         });
 
-        // 中止ボタン
-        document.getElementById('btn-escape').addEventListener('click', () => {
+        document.getElementById('btn-home').addEventListener('click', () => {
+            console.log('🔴 Home button clicked');
             window.location.href = '/';
         });
+
+        // 初期表示
+        console.log('✅ Typing page initialized');
     </script>
 </body>
 </html>
+
