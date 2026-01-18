@@ -186,9 +186,12 @@ class KeymapEditor {
         // キーマップオブジェクトに追加
         if (!this.currentKeymap.mappings) {
             this.currentKeymap.mappings = {};
+            console.log('📌 Created mappings object');
         }
 
         this.currentKeymap.mappings[sourceKey] = targetKey;
+        console.log('✅ Mapping added to currentKeymap:', this.currentKeymap.mappings);
+        console.log('📊 Full currentKeymap:', JSON.stringify(this.currentKeymap, null, 2));
 
         // UIに追加
         const mappingsList = document.getElementById('mappings-list');

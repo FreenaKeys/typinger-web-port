@@ -81,6 +81,17 @@ class KeymapValidator:
                 elif not isinstance(key['mods'], int) or key['mods'] < 0 or key['mods'] > 15:
                     errors.append(f"keys[{i}].mods は 0-15 の整数である必要があります")
 
+        # mappings チェック（オプション）
+        if 'mappings' in data:
+            if not isinstance(data['mappings'], dict):
+                errors.append("'mappings' はオブジェクトである必要があります")
+            else:
+                # mappings のキーと値が文字列であることを確認
+                for key, value in data['mappings'].items():
+                    if not isinstance(key, str) or not isinstance(value, str):
+                        errors.append(f"'mappings' のキーと値は文字列である必要があります")
+                        break
+
         return len(errors) == 0, errors
 
     @staticmethod
