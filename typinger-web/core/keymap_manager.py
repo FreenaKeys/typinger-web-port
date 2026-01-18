@@ -134,6 +134,20 @@ class KeymapManager:
         
         return sorted(files, key=lambda x: x['filename'])
 
+    def list_keymaps(self) -> List[str]:
+        """
+        保存済みキーマップのファイル名一覧を取得
+        
+        Returns:
+            List[str]: キーマップファイル名のリスト
+        """
+        try:
+            files = self.get_keymap_files()
+            return [f['filename'] for f in files]
+        except Exception as e:
+            print(f'[ERROR] Error listing keymaps: {e}')
+            return []
+
     def load_keymap(self, filename: str) -> Optional[Dict]:
         """
         キーマップファイルを読み込む

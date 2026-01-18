@@ -581,16 +581,29 @@ class KeymapEditor {
 
     async loadKeymapsList() {
         try {
+            console.log('📂 Loading keymaps list...');
             const response = await fetch('/api/keymap/list');
             const data = await response.json();
+            
+            console.log('📋 Keymaps response:', data);
 
             const listContainer = document.getElementById('keymaps-list');
-            if (!data.keymaps || data.keymaps.length === 0) {
-                listContainer.innerHTML = '<p>保存済みキーマップはありません</p>';
+            
+            if (!data.ok) {
+                console.warn('⚠️ API returned error:', data.error);
+            }
+
+            const keymaps = data.keymaps || [];
+            
+            if (keymaps.length === 0) {
+                listContainer.innerHTML = '<p style="color: #999;">保存済みキーマップはありません</p>';
+                console.log('ℹ️ No keymaps found');
                 return;
             }
 
-            listContainer.innerHTML = data.keymaps.map(name => {
+            console.log(`✅ Found ${keymaps.length} keymaps:`, keymaps);
+
+            listContainer.innerHTML = keymaps.map(name => {
                 return `
                     <div class="keymap-item">
                         <span class="keymap-name">${name}</span>
@@ -602,7 +615,9 @@ class KeymapEditor {
                 `;
             }).join('');
         } catch (error) {
-            console.error('キーマップリスト読み込みエラー:', error);
+            console.error('❌ キーマップリスト読み込みエラー:', error);
+            const listContainer = document.getElementById('keymaps-list');
+            listContainer.innerHTML = '<p style="color: red;">エラー: キーマップリストを読み込めません</p>';
         }
     }
 

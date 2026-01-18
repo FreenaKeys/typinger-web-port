@@ -567,15 +567,24 @@ def save_keymap():
             filename += '.json'
         
         # キーマップを保存
-        result = keymap_manager.save_keymap(filename, keymap_data)
-        print(f'[SAVE] Keymap saved: {filename}')
+        success, message = keymap_manager.save_keymap(filename, keymap_data)
         
-        return jsonify({
-            'ok': True,
-            'success': True,
-            'message': f'Keymap saved: {filename}',
-            'filename': filename
-        })
+        if success:
+            print(f'[SAVE] ✅ Keymap saved: {filename}')
+            return jsonify({
+                'ok': True,
+                'success': True,
+                'message': message,
+                'filename': filename
+            })
+        else:
+            print(f'[ERROR] ❌ Save failed: {message}')
+            return jsonify({
+                'ok': False,
+                'error': message,
+                'filename': filename
+            }), 400
+            
     except ValueError as e:
         print(f'[ERROR] Validation error: {e}')
         return jsonify({
