@@ -168,6 +168,17 @@
             console.log('⌨️ Selected keymap:', selectedKeymap);
         });
 
+        // ストレージセーフアクセス
+        function safeSetStorage(key, value) {
+            try {
+                sessionStorage.setItem(key, value);
+                return true;
+            } catch (error) {
+                console.warn(`⚠️ sessionStorage write denied: ${error.message}`);
+                return false;
+            }
+        }
+
         document.getElementById('btn-start').addEventListener('click', () => {
             if (!selectedScenario) {
                 alert('シナリオを選択してください');
@@ -178,7 +189,7 @@
             console.log('  Keymap:', selectedKeymap);
             
             // キーマップをセッションストレージに保存
-            sessionStorage.setItem('selectedKeymap', selectedKeymap);
+            safeSetStorage('selectedKeymap', selectedKeymap);
             
             // タイピング画面に遷移
             window.location.href = `/typing/${selectedScenario}`;

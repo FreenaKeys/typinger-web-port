@@ -294,6 +294,14 @@ class KeymapEditor {
     async saveKeymap() {
         const filename = document.getElementById('keymap-name').value || 'custom_keymap';
 
+        if (!filename.trim()) {
+            this.showMessage('キーマップ名を入力してください', 'error');
+            return;
+        }
+
+        console.log(`💾 Saving keymap: ${filename}`);
+        console.log('📊 Keymap data:', this.currentKeymap);
+
         try {
             const response = await fetch('/api/keymap/save', {
                 method: 'POST',
@@ -301,20 +309,25 @@ class KeymapEditor {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    filename: filename + '.json',
+                    filename: filename,
                     keymap: this.currentKeymap
                 })
             });
 
             const data = await response.json();
-            if (response.ok) {
-                this.showMessage(`キーマップ '${filename}' を保存しました`, 'success');
+            console.log('📋 Save response:', data);
+
+            if (data.ok || response.ok) {
+                this.showMessage(`✅ キーマップ '${filename}' を保存しました`, 'success');
+                console.log('✅ Save succeeded');
                 await this.loadKeymapsList();
             } else {
-                this.showMessage(`保存エラー: ${data.error}`, 'error');
+                this.showMessage(`❌ 保存エラー: ${data.error || 'Unknown error'}`, 'error');
+                console.error('❌ Save failed:', data);
             }
         } catch (error) {
-            this.showMessage(`保存失敗: ${error.message}`, 'error');
+            this.showMessage(`❌ 保存失敗: ${error.message}`, 'error');
+            console.error('❌ Save exception:', error);
         }
     }
 

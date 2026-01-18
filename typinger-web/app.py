@@ -476,23 +476,36 @@ def keymap_editor():
 def get_keys_info():
     """HIDキー情報を取得"""
     try:
-        # HID_KEYSが存在しない場合はデフォルト値を返す
-        hid_keys = getattr(keymap_manager.validator, 'HID_KEYS', {})
-        
+        # デフォルトのキー情報を返す
         keys_info = {
             'ok': True,
-            'keys': hid_keys,
+            'keys': {},
             'modifiers': {
                 'shift': 0x01,
                 'ctrl': 0x02,
                 'alt': 0x04,
                 'gui': 0x08
             },
-            'total_keys': len(hid_keys)
+            'total_keys': 0
         }
+        
+        # HID_KEYSがあれば追加
+        try:
+            if hasattr(keymap_manager, 'validator') and hasattr(keymap_manager.validator, 'HID_KEYS'):
+                keys_info['keys'] = keymap_manager.validator.HID_KEYS
+                keys_info['total_keys'] = len(keys_info['keys'])
+        except Exception as nested_error:
+            print(f'Warning: Could not load HID_KEYS: {nested_error}')
+        
         return jsonify(keys_info)
     except Exception as e:
-        return jsonify({'ok': False, 'error': str(e)}), 500
+        print(f'Error in get_keys_info: {e}')
+        # エラーでもok=Falseで空のkeysを返す
+        return jsonify({
+            'ok': False,
+            'keys': {},
+            'error': str(e)
+        }), 200  # 200で返して、フロント側で処理
 
 @app.route('/api/keymap/list')
 def list_keymaps():
@@ -501,11 +514,18 @@ def list_keymaps():
         keymaps = keymap_manager.list_keymaps()
         return jsonify({
             'ok': True,
-            'keymaps': keymaps,
-            'count': len(keymaps)
+            'keymaps': keymaps if keymaps else [],
+            'count': len(keymaps) if keymaps else 0
         })
     except Exception as e:
-        return jsonify({'ok': False, 'error': str(e)}), 500
+        print(f'Error in list_keymaps: {e}')
+        # エラーでも空のリストを返す
+        return jsonify({
+            'ok': False,
+            'keymaps': [],
+            'count': 0,
+            'error': str(e)
+        }), 200  # 200で返して、フロント側で処理
 
 @app.route('/api/keymap/<filename>')
 def get_keymap(filename):
@@ -526,8 +546,20 @@ def save_keymap():
     """キーマップを保存"""
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({
+                'ok': False,
+                'error': 'Request body is empty'
+            }), 400
+        
         filename = data.get('filename', 'custom_keymap.json')
         keymap_data = data.get('keymap')
+        
+        if not keymap_data:
+            return jsonify({
+                'ok': False,
+                'error': 'Keymap data is required'
+            }), 400
         
         # ファイル名のサニタイズ
         filename = filename.replace('..', '').replace('/', '').replace('\\', '')
@@ -535,17 +567,27 @@ def save_keymap():
             filename += '.json'
         
         # キーマップを保存
-        keymap_manager.save_keymap(filename, keymap_data)
+        result = keymap_manager.save_keymap(filename, keymap_data)
+        print(f'[SAVE] Keymap saved: {filename}')
         
         return jsonify({
+            'ok': True,
             'success': True,
             'message': f'Keymap saved: {filename}',
             'filename': filename
         })
     except ValueError as e:
-        return jsonify({'error': f'Validation error: {str(e)}'}), 400
+        print(f'[ERROR] Validation error: {e}')
+        return jsonify({
+            'ok': False,
+            'error': f'Validation error: {str(e)}'
+        }), 400
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f'[ERROR] Save keymap error: {e}')
+        return jsonify({
+            'ok': False,
+            'error': str(e)
+        }), 500
 
 @app.route('/api/keymap/validate', methods=['POST'])
 def validate_keymap():

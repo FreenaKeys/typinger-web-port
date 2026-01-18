@@ -225,8 +225,8 @@
             loadKeymap(preset);
             
             // sessionStorage に保存
-            sessionStorage.setItem('selectedKeymap', preset);
-            console.log('💾 Keymap saved to sessionStorage:', preset);
+            safeSetStorage('selectedKeymap', preset);
+            console.log('💾 Keymap saved to storage:', preset);
             
             const presetNames = {
                 'jis': 'JIS配列',
@@ -236,6 +236,26 @@
             document.getElementById('current-keymap-display').textContent = presetNames[preset] || preset;
         });
 
+        // ========== ストレージアクセス関数（セキュリティエラー対応）==========
+        function safeGetStorage(key, defaultValue = null) {
+            try {
+                return sessionStorage.getItem(key) || defaultValue;
+            } catch (error) {
+                console.warn(`⚠️ sessionStorage access denied: ${error.message}, using default`);
+                return defaultValue;
+            }
+        }
+
+        function safeSetStorage(key, value) {
+            try {
+                sessionStorage.setItem(key, value);
+                return true;
+            } catch (error) {
+                console.warn(`⚠️ sessionStorage write denied: ${error.message}`);
+                return false;
+            }
+        }
+
         // 初期キーマップ読み込み
         loadKeymap('jis');
         
@@ -243,7 +263,7 @@
         loadCustomKeymaps();
         
         // セッションストレージから keymap を読み込み
-        const savedKeymap = sessionStorage.getItem('selectedKeymap');
+        const savedKeymap = safeGetStorage('selectedKeymap');
         if (savedKeymap) {
             console.log('💾 Loading saved keymap:', savedKeymap);
             loadKeymap(savedKeymap);
