@@ -303,8 +303,28 @@
         }
 
         // ========== キー入力処理 ==========
+        // ========== キーマッピング処理 ==========
+        function applyKeyMapping(inputChar) {
+            /**
+             * キーマッピングを適用
+             * - currentKeymap に mappings がある場合はそれを使用
+             * - ない場合は元の文字を返す
+             */
+            if (!keymapData || !keymapData.mappings) {
+                return inputChar;
+            }
+
+            const mappedChar = keymapData.mappings[inputChar];
+            if (mappedChar) {
+                console.log(`🔄 Keymap applied: ${inputChar} → ${mappedChar}`);
+                return mappedChar;
+            }
+
+            return inputChar;
+        }
+
         document.getElementById('typing-input').addEventListener('keydown', async (e) => {
-            const char = e.key;
+            let char = e.key;
             const input = document.getElementById('typing-input');
 
             // Backspace処理
@@ -325,8 +345,11 @@
             // 制御文字は無視
             if (e.ctrlKey || e.altKey || e.metaKey) return;
 
+            // キーマッピングを適用
+            const mappedChar = applyKeyMapping(char);
+            
             // 通常のキー入力
-            console.log('⌨️ Key pressed:', char);
+            console.log(`⌨️ Key pressed: ${char}${char !== mappedChar ? ` (mapped: ${mappedChar})` : ''}`);
 
             try {
                 const timestamp = Date.now() - startTime;
@@ -334,7 +357,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        char: char, 
+                        char: mappedChar,  // マップされた文字を送信
                         timestamp: timestamp,
                         keymap: currentKeymap
                     })

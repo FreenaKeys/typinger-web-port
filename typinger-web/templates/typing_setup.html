@@ -103,6 +103,9 @@
                         <option value="ansi">ANSI配列</option>
                         <option value="dvorak">Dvorak配列</option>
                     </select>
+                    <div id="keymap-info" style="margin-top: 10px; font-size: 12px; color: #666; min-height: 20px;">
+                        <!-- キーマップ情報が表示される -->
+                    </div>
                 </div>
 
                 <!-- 情報 -->
@@ -163,9 +166,45 @@
             console.log('📝 Selected scenario:', selectedScenario);
         });
 
-        document.getElementById('keymap-select').addEventListener('change', (e) => {
+        document.getElementById('keymap-select').addEventListener('change', async (e) => {
             selectedKeymap = e.target.value;
             console.log('⌨️ Selected keymap:', selectedKeymap);
+            
+            // キーマップ情報を表示
+            const infoDiv = document.getElementById('keymap-info');
+            
+            try {
+                // プリセットまたはカスタムキーマップを読み込む
+                let response;
+                if (['jis', 'ansi', 'dvorak'].includes(selectedKeymap)) {
+                    response = await fetch(`/api/keymap/presets/${selectedKeymap}`);
+                } else {
+                    response = await fetch(`/api/keymap/${selectedKeymap}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.ok && data.keymap) {
+                    const keymap = data.keymap;
+                    const hasMappings = keymap.mappings && Object.keys(keymap.mappings).length > 0;
+                    
+                    if (hasMappings) {
+                        const mappingCount = Object.keys(keymap.mappings).length;
+                        const mappingsList = Object.entries(keymap.mappings)
+                            .slice(0, 3)
+                            .map(([from, to]) => `${from}→${to}`)
+                            .join(', ');
+                        infoDiv.innerHTML = `✅ カスタムマッピング有効 (${mappingCount}個): ${mappingsList}${mappingCount > 3 ? '...' : ''}`;
+                    } else {
+                        infoDiv.innerHTML = '✓ 標準キーマップ';
+                    }
+                } else {
+                    infoDiv.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Error loading keymap info:', error);
+                infoDiv.innerHTML = '';
+            }
         });
 
         // ストレージセーフアクセス
