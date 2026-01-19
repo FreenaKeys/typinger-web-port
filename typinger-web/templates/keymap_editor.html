@@ -336,6 +336,7 @@
                     <div style="text-align: center; margin-top: 15px; display: flex; gap: 5px;">
                         <button id="btn-save-keymap" style="flex: 1; padding: 10px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 保存</button>
                         <button id="btn-load-keymap" style="flex: 1; padding: 10px 15px; background: #2980b9; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">📂 読み込み</button>
+                        <button onclick="window.resetKeymap()" style="flex: 1; padding: 10px 15px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">🔄 リセット</button>
                     </div>
 
                     <!-- 保存済みキーマップ一覧 -->
@@ -521,19 +522,34 @@
             console.log('🔄 Updating keyboard display with mappings...');
             const keys = document.querySelectorAll('.key');
             
+            // 元のキーボード配列（参照用）
+            const originalKeyboard = {
+                '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', 
+                '6': '6', '7': '7', '8': '8', '9': '9', '0': '0',
+                'q': 'q', 'w': 'w', 'e': 'e', 'r': 'r', 't': 't',
+                'y': 'y', 'u': 'u', 'i': 'i', 'o': 'o', 'p': 'p',
+                'a': 'a', 's': 's', 'd': 'd', 'f': 'f', 'g': 'g',
+                'h': 'h', 'j': 'j', 'k': 'k', 'l': 'l',
+                'z': 'z', 'x': 'x', 'c': 'c', 'v': 'v', 'b': 'b',
+                'n': 'n', 'm': 'm'
+            };
+            
             keys.forEach(keyElement => {
                 const originalText = keyElement.textContent.trim();
+                const lowerText = originalText.toLowerCase();
                 
                 // 特殊キーはスキップ
-                if (['Esc', 'Tab', 'Caps Lock', 'Shift', 'Ctrl', 'Win', 'Alt', 'Menu', 'Backspace', 'Enter', 'Space'].includes(originalText)) {
+                if (['esc', 'tab', 'caps lock', 'shift', 'ctrl', 'win', 'alt', 'menu', 'backspace', 'enter', 'space'].includes(lowerText)) {
                     return;
                 }
                 
-                // 小文字に統一してマッピング確認
-                const lowerText = originalText.toLowerCase();
+                // 元のキーボード配列に存在するキーのみ処理
+                if (!originalKeyboard[lowerText]) {
+                    return;
+                }
                 
+                // マッピングがあるかチェック
                 if (currentMappings[lowerText]) {
-                    // マッピングがある場合、新しいテキストを表示
                     const mappedText = currentMappings[lowerText];
                     keyElement.textContent = mappedText.toUpperCase();
                     keyElement.style.background = '#ffc107';
@@ -550,6 +566,33 @@
             });
             
             console.log('✅ Keyboard display updated');
+        }
+
+        // キーマップをリセット（デフォルトに戻す）
+        function resetKeymap() {
+            if (!confirm('キーマップをリセットしてもよろしいですか？')) {
+                return;
+            }
+            
+            console.log('🔄 Resetting keymap to default...');
+            currentMappings = {};
+            sourceKeyValue = null;
+            targetKeyValue = null;
+            
+            // UI更新
+            saveCurrentMappingsToStorage();
+            updateKeyboardDisplay();
+            updateMappingsList();
+            clearMapping();
+            
+            const nameInput = document.getElementById('keymap-name');
+            if (nameInput) nameInput.value = '';
+            
+            const selectForEditing = document.getElementById('keymap-select-for-editing');
+            if (selectForEditing) selectForEditing.value = '';
+            
+            showMessage('✅ キーマップをリセットしました', 'success');
+            console.log('✅ Keymap reset complete');
         }
 
         // マッピング一覧を更新
@@ -791,6 +834,7 @@
         window.addMapping = addMapping;
         window.saveKeymap = saveKeymap;
         window.clearMapping = clearMapping;
+        window.resetKeymap = resetKeymap;
 
         // イベントリスナー登録関数
         function setupAllEventListeners() {
