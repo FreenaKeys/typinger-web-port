@@ -403,12 +403,27 @@
                         <div style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #bdc3c7; display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-weight: bold; color: #2c3e50;">${name}</span>
                             <div style="display: flex; gap: 5px;">
-                                <button onclick="loadKeymap('${name}')" style="padding: 5px 10px; background: #2980b9; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">読込</button>
-                                <button onclick="deleteKeymap('${name}')" style="padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">削除</button>
+                                <button class="btn-load-saved-keymap" data-name="${name}" style="padding: 5px 10px; background: #2980b9; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">読込</button>
+                                <button class="btn-delete-saved-keymap" data-name="${name}" style="padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">削除</button>
                             </div>
                         </div>
                     `;
                 }).join('');
+
+                // イベントリスナーを登録
+                container.querySelectorAll('.btn-load-saved-keymap').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        console.log(`🖱️ Load button clicked`);
+                        loadKeymap(e.target.dataset.name);
+                    });
+                });
+
+                container.querySelectorAll('.btn-delete-saved-keymap').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        console.log(`🖱️ Delete button clicked`);
+                        deleteKeymap(e.target.dataset.name);
+                    });
+                });
 
                 console.log(`✅ Loaded ${customKeymaps.length} keymaps`);
             } catch (error) {
@@ -474,9 +489,17 @@
             mappingsList.innerHTML = Object.entries(currentMappings).map(([from, to]) => `
                 <div style="padding: 8px; margin: 5px 0; background: #f0f0f0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
                     <span><strong>${from}</strong> → <strong>${to}</strong></span>
-                    <button onclick="removeMapping('${from}')" style="padding: 3px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">削除</button>
+                    <button class="btn-remove-mapping" data-from="${from}" style="padding: 3px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">削除</button>
                 </div>
             `).join('');
+            
+            // イベントリスナーを登録
+            mappingsList.querySelectorAll('.btn-remove-mapping').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    console.log(`🖱️ Remove button clicked for: ${e.target.dataset.from}`);
+                    removeMapping(e.target.dataset.from);
+                });
+            });
         }
 
         // マッピング削除
