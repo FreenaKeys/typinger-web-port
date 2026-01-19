@@ -325,10 +325,17 @@
                             <label style="display: block; font-weight: bold; margin-bottom: 8px;">💾 キーマップ名:</label>
                             <input type="text" id="keymap-name" placeholder="my_keymap" style="width: 100%; padding: 10px; border: 2px solid #bdc3c7; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
                         </div>
-                        <div style="display: flex; gap: 5px; align-items: flex-end;">
-                            <button id="btn-save-keymap" style="flex: 1; padding: 10px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 保存</button>
-                            <button id="btn-load-keymap" style="flex: 1; padding: 10px 15px; background: #2980b9; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">📂 読み込み</button>
+                        <div>
+                            <label style="display: block; font-weight: bold; margin-bottom: 8px;">📂 または既存のマップを選択:</label>
+                            <select id="keymap-select-for-editing" style="width: 100%; padding: 10px; border: 2px solid #bdc3c7; border-radius: 4px; font-size: 14px; box-sizing: border-box; cursor: pointer;">
+                                <option value="">-- 新規作成 --</option>
+                            </select>
                         </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 15px; display: flex; gap: 5px;">
+                        <button id="btn-save-keymap" style="flex: 1; padding: 10px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 保存</button>
+                        <button id="btn-load-keymap" style="flex: 1; padding: 10px 15px; background: #2980b9; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">📂 読み込み</button>
                     </div>
 
                     <!-- 保存済みキーマップ一覧 -->
@@ -565,6 +572,74 @@
                 }
             } catch (error) {
                 console.warn('⚠️ Failed to load from localStorage:', error);
+            }
+        }
+
+        // 既存のカスタムキーマップをセレクトに追加
+        async function populateKeymapSelectForEditing() {
+            try {
+                console.log('📂 Populating keymap select for editing...');
+                const response = await fetch('/api/keymap/list');
+                const data = await response.json();
+                
+                const select = document.getElementById('keymap-select-for-editing');
+                if (!select) {
+                    console.error('❌ keymap-select-for-editing not found');
+                    return;
+                }
+
+                if (data.ok && data.keymaps) {
+                    const customKeymaps = data.keymaps.filter(km => 
+                        km !== 'jis.json' && km !== 'ansi.json' && km !== 'dvorak.json'
+                    );
+
+                    customKeymaps.forEach(km => {
+                        const name = km.replace('.json', '');
+                        const option = document.createElement('option');
+                        option.value = name;
+                        option.textContent = `📌 ${name}`;
+                        select.appendChild(option);
+                    });
+
+                    console.log(`✅ Added ${customKeymaps.length} keymaps to select`);
+
+                    // セレクト変更時のイベント
+                    select.addEventListener('change', (e) => {
+                        if (e.target.value) {
+                            const keymapName = e.target.value;
+                            console.log(`📂 Loading keymap for editing: ${keymapName}`);
+                            loadKeymapForEditing(keymapName);
+                        }
+                    });
+                } else {
+                    console.log('ℹ️ No custom keymaps available');
+                }
+            } catch (error) {
+                console.error('❌ Error populating keymap select:', error);
+            }
+        }
+
+        // 既存のキーマップを読み込んで編集
+        async function loadKeymapForEditing(name) {
+            try {
+                console.log(`📂 Loading keymap for editing: ${name}`);
+                const response = await fetch(`/api/keymap/${name}.json`);
+                const data = await response.json();
+
+                if (data.keymap && data.keymap.mappings) {
+                    currentMappings = data.keymap.mappings;
+                    const nameInput = document.getElementById('keymap-name');
+                    if (nameInput) nameInput.value = name;
+                    
+                    updateMappingsList();
+                    showMessage(`✅ キーマップ '${name}' を読み込みました`, 'success');
+                    console.log(`✅ Loaded keymap for editing:`, currentMappings);
+                } else {
+                    showMessage('キーマップの読み込みに失敗しました', 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error loading keymap for editing:', error);
+                showMessage('キーマップの読み込みに失敗しました', 'error');
             }
         }
 
@@ -806,7 +881,8 @@
                 setupAllEventListeners();
                 setupKeyboardClickListeners();
                 loadSavedKeymaps();
-                loadCurrentMappingsFromStorage();  // ← 追加
+                loadCurrentMappingsFromStorage();
+                populateKeymapSelectForEditing();
                 console.log('✅ Initialization complete');
             });
         } else {
@@ -815,7 +891,8 @@
             setupAllEventListeners();
             setupKeyboardClickListeners();
             loadSavedKeymaps();
-            loadCurrentMappingsFromStorage();  // ← 追加
+            loadCurrentMappingsFromStorage();
+            populateKeymapSelectForEditing();
             console.log('✅ Initialization complete');
         }
 
