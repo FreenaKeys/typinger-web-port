@@ -475,11 +475,25 @@
         // UI プレビュー更新
         function updateMappingPreview() {
             if (sourceKeyValue && targetKeyValue) {
-                const mappingPreviewEl = document.querySelector('.info-section');
                 console.log(`📍 Updating preview: ${sourceKeyValue} → ${targetKeyValue}`);
                 
-                // 現在のマッピング表示を更新
+                // 自動的にマッピングを追加
+                currentMappings[sourceKeyValue] = targetKeyValue;
+                console.log(`✅ Auto-added mapping: "${sourceKeyValue}" → "${targetKeyValue}"`);
+                console.log(`   Updated currentMappings:`, currentMappings);
+                
+                // UI更新
                 updateMappingsList();
+                
+                // メッセージ表示
+                const successMsg = `マッピング '${sourceKeyValue} → ${targetKeyValue}' を追加しました`;
+                showMessage(successMsg, 'success');
+                
+                // 次のマッピングのためにリセット
+                sourceKeyValue = null;
+                targetKeyValue = null;
+                clearMapping();
+                console.log('🔄 Reset for next mapping');
             }
         }
 
@@ -497,11 +511,17 @@
             }
 
             mappingsList.innerHTML = Object.entries(currentMappings).map(([from, to]) => `
-                <div style="padding: 8px; margin: 5px 0; background: #f0f0f0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                    <span><strong>${from}</strong> → <strong>${to}</strong></span>
-                    <button onclick="window.removeMapping('${from}')" style="padding: 3px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">削除</button>
+                <div style="padding: 12px; margin: 8px 0; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #28a745;">
+                    <span style="font-size: 14px;">
+                        <span style="font-weight: bold; color: #2c3e50; font-size: 16px;">${from}</span>
+                        <span style="color: #95a5a6; margin: 0 8px;">→</span>
+                        <span style="color: #27ae60; font-weight: bold; font-size: 16px;">${to}</span>
+                    </span>
+                    <button onclick="window.removeMapping('${from}')" style="padding: 6px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; font-weight: bold;">🗑️ 削除</button>
                 </div>
             `).join('');
+            
+            console.log(`📋 Updated mappings list: ${Object.keys(currentMappings).length} items`);
         }
 
         // マッピング削除
