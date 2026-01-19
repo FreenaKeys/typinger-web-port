@@ -178,6 +178,12 @@
                 
                 if (data.ok) {
                     keymapData = data.keymap;
+                    
+                    // mappings がない場合は初期化
+                    if (!keymapData.mappings) {
+                        keymapData.mappings = {};
+                    }
+                    
                     currentKeymap = preset;
                     
                     const presetNames = {
@@ -309,22 +315,46 @@
         if (savedKeymapData) {
             try {
                 const parsed = JSON.parse(savedKeymapData);
+                console.log('💾 Restored keymap data:', parsed);
+                
                 if (parsed.mappings && Object.keys(parsed.mappings).length > 0) {
-                    keymapData = parsed;
+                    // keymapData を完全に置き換える
+                    if (!keymapData) {
+                        keymapData = { version: 1, keys: [], mappings: {} };
+                    }
+                    keymapData.mappings = { ...parsed.mappings };
+                    console.log('✅ Applied mappings:', keymapData.mappings);
                     updateMappingPreview();
-                    console.log('💾 Restored keymap data from storage');
                 }
             } catch (e) {
                 console.warn('⚠️ Failed to restore keymap data:', e);
             }
         }
+        
+        // keymapData の確認
+        console.log('📊 Initial keymapData:', keymapData);
 
         // ========== カスタムマッピングプレビュー処理 ==========
         function updateMappingPreview() {
             const preview = document.getElementById('custom-mapping-preview');
-            const mappings = keymapData?.mappings;
             
-            if (mappings && Object.keys(mappings).length > 0) {
+            // keymapData の確認
+            if (!keymapData) {
+                console.warn('⚠️ keymapData is not initialized in updateMappingPreview');
+                preview.style.display = 'none';
+                return;
+            }
+            
+            if (!keymapData.mappings) {
+                keymapData.mappings = {};
+            }
+            
+            const mappings = keymapData.mappings;
+            const mappingCount = Object.keys(mappings).length;
+            
+            console.log(`🎯 Updating preview - ${mappingCount} mappings:`, mappings);
+            
+            if (mappingCount > 0) {
                 preview.style.display = 'block';
                 const previewMappings = document.getElementById('preview-mappings');
                 previewMappings.innerHTML = Object.entries(mappings)
@@ -335,8 +365,8 @@
                         </span>
                     `).join('');
                 
-                if (Object.keys(mappings).length > 5) {
-                    previewMappings.innerHTML += `<span style="font-size: 11px; color: #7f8c8d;">他 ${Object.keys(mappings).length - 5} 個</span>`;
+                if (mappingCount > 5) {
+                    previewMappings.innerHTML += `<span style="font-size: 11px; color: #7f8c8d;">他 ${mappingCount - 5} 個</span>`;
                 }
             } else {
                 preview.style.display = 'none';
@@ -347,7 +377,19 @@
         function showMappingEditor() {
             const modal = document.getElementById('mapping-modal');
             const editItems = document.getElementById('edit-mapping-items');
-            const mappings = keymapData?.mappings || {};
+            
+            // keymapData を確認して初期化
+            if (!keymapData) {
+                console.error('❌ keymapData is null');
+                keymapData = { version: 1, keys: [], mappings: {} };
+            }
+            if (!keymapData.mappings) {
+                console.warn('⚠️ keymapData.mappings is null, initializing');
+                keymapData.mappings = {};
+            }
+            
+            const mappings = keymapData.mappings || {};
+            console.log('📊 Current mappings:', mappings);
             
             if (Object.keys(mappings).length === 0) {
                 editItems.innerHTML = '<p style="color: #999; text-align: center;">マッピングなし</p>';
@@ -372,25 +414,53 @@
 
         // マッピング値を編集
         function editMappingValue(from, to) {
+            if (!keymapData) {
+                console.error('❌ keymapData is not initialized');
+                alert('キーマップデータが初期化されていません');
+                return;
+            }
+            
             editingKey = from;
             editingValue = to;
             console.log(`✏️ Editing mapping: ${from} → ${to}`);
+            console.log('📊 Current keymapData:', keymapData);
             
             const editItems = document.getElementById('edit-mapping-items');
             editItems.innerHTML = `
                 <div style="background: #fff3cd; padding: 12px; border-radius: 4px; border: 2px solid #f39c12;">
-                    <p style="margin: 0 0 10px 0; font-weight: bold; color: #f39c12;">⌨️ \"${from}\" の新しい値を入力してください...</p>
+                    <p style="margin: 0 0 10px 0; font-weight: bold; color: #f39c12;">⌨️ "${from}" の新しい値を入力してください...</p>
                     <p style="margin: 0; font-size: 12px; color: #7f8c8d;">キーボードのキーを1つ押してください</p>
                 </div>
             `;
             
+            // フォーカスをボタンに移して、キー入力を確実にキャッチ
+            editItems.focus();
+            
             // キー入力待機 (一度だけ)
             const handler = (e) => {
+                // 制御キーは無視
+                if (e.ctrlKey || e.altKey || e.metaKey) return;
+                if (e.key === 'Escape') {
+                    document.removeEventListener('keydown', handler, true);
+                    showMappingEditor();
+                    return;
+                }
+                
                 e.preventDefault();
+                e.stopPropagation();
+                
                 const newValue = e.key;
                 console.log(`✅ New value captured: ${newValue}`);
+                console.log(`🔄 Updating: ${from} → ${newValue}`);
+                
+                // keymapData を確認
+                if (!keymapData.mappings) {
+                    console.error('❌ keymapData.mappings does not exist');
+                    keymapData.mappings = {};
+                }
                 
                 keymapData.mappings[from] = newValue;
+                console.log('✅ Mapping updated:', keymapData.mappings);
                 updateMappingPreview();
                 
                 // UI再表示
