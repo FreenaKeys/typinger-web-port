@@ -344,7 +344,7 @@
         }
 
         // 編集完了ボタン
-        document.addEventListener('DOMContentLoaded', () => {
+        function setupEventListeners() {
             const btnEditClose = document.getElementById('btn-edit-close');
             if (btnEditClose) {
                 btnEditClose.addEventListener('click', () => {
@@ -359,22 +359,61 @@
                     toggleEditMode();
                     alert('✅ マッピングを保存しました！');
                 });
+            } else {
+                console.error('❌ btn-edit-close element not found');
             }
-        });
 
-        // ========== イベントリスナー ==========
-        document.getElementById('scenario-select').addEventListener('change', (e) => {
-            selectedScenario = e.target.value;
-            console.log('📝 Selected scenario:', selectedScenario);
-        });
+            const scenarioSelect = document.getElementById('scenario-select');
+            if (scenarioSelect) {
+                scenarioSelect.addEventListener('change', (e) => {
+                    selectedScenario = e.target.value;
+                    console.log('📝 Selected scenario:', selectedScenario);
+                });
+            }
 
-        document.getElementById('keymap-select').addEventListener('change', (e) => {
-            selectedKeymap = e.target.value;
-            console.log('⌨️ Selected keymap:', selectedKeymap);
-            editingMode = false;
-            document.getElementById('keymap-editor-info').style.display = 'none';
-            displayMappings();
-        });
+            const keymapSelect = document.getElementById('keymap-select');
+            if (keymapSelect) {
+                keymapSelect.addEventListener('change', (e) => {
+                    selectedKeymap = e.target.value;
+                    console.log('⌨️ Selected keymap:', selectedKeymap);
+                    editingMode = false;
+                    const editorInfo = document.getElementById('keymap-editor-info');
+                    if (editorInfo) editorInfo.style.display = 'none';
+                    displayMappings();
+                });
+            }
+
+            const btnStart = document.getElementById('btn-start');
+            if (btnStart) {
+                btnStart.addEventListener('click', () => {
+                    if (!selectedScenario) {
+                        alert('シナリオを選択してください');
+                        return;
+                    }
+                    console.log('🎬 Starting typing session');
+                    console.log('  Scenario:', selectedScenario);
+                    console.log('  Keymap:', selectedKeymap);
+                    
+                    // キーマップをセッションストレージに保存
+                    safeSetStorage('selectedKeymap', selectedKeymap);
+                    if (currentKeymapData && currentKeymapData.mappings) {
+                        safeSetStorage('currentKeymapData', JSON.stringify(currentKeymapData));
+                    }
+                    
+                    // タイピング画面に遷移
+                    window.location.href = `/typing/${selectedScenario}`;
+                });
+            }
+
+            const btnHome = document.getElementById('btn-home');
+            if (btnHome) {
+                btnHome.addEventListener('click', () => {
+                    window.location.href = '/';
+                });
+            }
+
+            console.log('✅ All event listeners registered');
+        }
 
         // ストレージセーフアクセス
         function safeSetStorage(key, value) {
@@ -411,8 +450,11 @@
         });
 
         // 初期化
+        console.log('🔧 Initializing...');
         loadScenarios();
         loadCustomKeymaps();
+        setupEventListeners();
+        console.log('✅ Setup complete');
     </script>
 </body>
 </html>

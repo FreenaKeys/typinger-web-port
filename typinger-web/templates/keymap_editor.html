@@ -592,11 +592,10 @@
         window.saveKeymap = saveKeymap;
         window.clearMapping = clearMapping;
 
-        // DOM 読み込み完了後に初期化
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🎯 DOM Content Loaded - Initializing...');
+        // イベントリスナー登録関数
+        function setupAllEventListeners() {
+            console.log('🔧 Setting up event listeners...');
             
-            // イベントリスナー登録
             const sourceDisplay = document.getElementById('source-key-display');
             const targetDisplay = document.getElementById('target-key-display');
             const btnClear = document.getElementById('btn-clear-mapping');
@@ -612,6 +611,7 @@
                     sourceDisplay.innerHTML = '<span style="color: #856404;">🔴 キー入力待機中...</span>';
                     console.log('📍 Waiting for source key input...');
                 });
+                console.log('✅ Source display listener attached');
             } else {
                 console.error('❌ source-key-display element not found');
             }
@@ -624,6 +624,7 @@
                     targetDisplay.innerHTML = '<span style="color: #0c5460;">🔴 キー入力待機中...</span>';
                     console.log('🎯 Waiting for target key input...');
                 });
+                console.log('✅ Target display listener attached');
             } else {
                 console.error('❌ target-key-display element not found');
             }
@@ -633,6 +634,7 @@
                     console.log('🖱️ Clear button clicked');
                     clearMapping();
                 });
+                console.log('✅ Clear button listener attached');
             }
 
             if (btnAdd) {
@@ -640,6 +642,7 @@
                     console.log('🖱️ Add mapping button clicked');
                     addMapping();
                 });
+                console.log('✅ Add button listener attached');
             }
 
             if (btnSave) {
@@ -647,6 +650,7 @@
                     console.log('🖱️ Save keymap button clicked');
                     saveKeymap();
                 });
+                console.log('✅ Save button listener attached');
             }
 
             if (btnLoad) {
@@ -660,6 +664,7 @@
                         showMessage('キーマップ名を入力してください', 'error');
                     }
                 });
+                console.log('✅ Load button listener attached');
             }
 
             // グローバルキー入力リスナー
@@ -690,10 +695,26 @@
                 mappingMode = null;
             }, true);
 
-            // 初期化
+            console.log('✅ All event listeners registered successfully');
+        }
+
+        // DOM 読み込み完了を確認
+        if (document.readyState === 'loading') {
+            // ドキュメント読み込み中
+            console.log('📄 Document is loading...');
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('🎯 DOM Content Loaded');
+                setupAllEventListeners();
+                loadSavedKeymaps();
+                console.log('✅ Initialization complete');
+            });
+        } else {
+            // ドキュメント読み込み完了済み
+            console.log('📄 Document already loaded');
+            setupAllEventListeners();
             loadSavedKeymaps();
             console.log('✅ Initialization complete');
-        });
+        }
     </script>
 </body>
 </html>
