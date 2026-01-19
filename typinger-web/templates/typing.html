@@ -460,12 +460,27 @@
         }
 
         // イベントリスナー
-        document.getElementById('btn-toggle-mappings').addEventListener('click', toggleMappingsDetail);
+        const btnToggle = document.getElementById('btn-toggle-mappings');
+        console.log('🔍 btn-toggle-mappings element:', btnToggle);
+        if (btnToggle) {
+            btnToggle.addEventListener('click', () => {
+                console.log('🖱️ Toggle button clicked!');
+                toggleMappingsDetail();
+            });
+            console.log('✅ Toggle button event listener registered');
+        } else {
+            console.error('❌ btn-toggle-mappings element NOT FOUND!');
+        }
 
         // グローバルスコープに関数を登録（onclick から呼び出し可能にする）
         window.editMappingValueInline = editMappingValueInline;
         window.removeMappingInline = removeMappingInline;
         window.toggleMappingsDetail = toggleMappingsDetail;
+        console.log('✅ Global functions registered:', {
+            editMappingValueInline: typeof window.editMappingValueInline,
+            removeMappingInline: typeof window.removeMappingInline,
+            toggleMappingsDetail: typeof window.toggleMappingsDetail
+        });
 
         console.log('  Target Rubi:', TARGET_RUBI);
 
