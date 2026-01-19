@@ -502,15 +502,20 @@
 
         // マッピング追加
         function addMapping() {
-            console.log(`🖱️ addMapping called - source: ${sourceKeyValue}, target: ${targetKeyValue}`);
+            console.log('🔍 addMapping called');
+            console.log(`   sourceKeyValue: "${sourceKeyValue}"`);
+            console.log(`   targetKeyValue: "${targetKeyValue}"`);
+            console.log(`   currentMappings:`, currentMappings);
             
             if (!sourceKeyValue || !targetKeyValue) {
+                console.error(`❌ Cannot add mapping - source: "${sourceKeyValue}", target: "${targetKeyValue}"`);
                 showMessage('元のキーと変更先のキーを両方選択してください', 'error');
                 return;
             }
 
             currentMappings[sourceKeyValue] = targetKeyValue;
-            console.log(`✅ Mapping added: ${sourceKeyValue} → ${targetKeyValue}`);
+            console.log(`✅ Mapping added: "${sourceKeyValue}" → "${targetKeyValue}"`);
+            console.log(`   Updated currentMappings:`, currentMappings);
             updateMappingsList();
             clearMapping();
             showMessage(`マッピング '${sourceKeyValue} → ${targetKeyValue}' を追加しました`, 'success');
@@ -671,28 +676,40 @@
             document.addEventListener('keydown', (e) => {
                 if (!mappingMode) return;
                 
-                e.preventDefault();
-                const keyName = e.key;
+                console.log(`⌨️ Key event triggered - mappingMode: ${mappingMode}, key: ${e.key}`);
                 
-                console.log(`⌨️ Key pressed in ${mappingMode} mode: ${keyName} (code: ${e.code})`);
+                // 特殊キーは無視
+                if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
+                    return;
+                }
+                
+                // イベントを完全に停止
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                const keyName = e.key;
+                console.log(`✅ Captured key: "${keyName}" (code: ${e.code})`);
 
                 if (mappingMode === 'source') {
                     sourceKeyValue = keyName;
                     if (sourceDisplay) {
-                        sourceDisplay.innerHTML = `<span>${keyName}</span>`;
+                        sourceDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyName}</span>`;
                         sourceDisplay.style.background = '#d4edda';
+                        sourceDisplay.style.borderColor = '#27ae60';
                     }
-                    console.log(`✅ Source key set: ${keyName}`);
+                    console.log(`✅ Source key set to: "${keyName}"`);
+                    mappingMode = null;
                 } else if (mappingMode === 'target') {
                     targetKeyValue = keyName;
                     if (targetDisplay) {
-                        targetDisplay.innerHTML = `<span>${keyName}</span>`;
+                        targetDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyName}</span>`;
                         targetDisplay.style.background = '#d4edda';
+                        targetDisplay.style.borderColor = '#27ae60';
                     }
-                    console.log(`✅ Target key set: ${keyName}`);
+                    console.log(`✅ Target key set to: "${keyName}"`);
+                    mappingMode = null;
                 }
-
-                mappingMode = null;
             }, true);
 
             console.log('✅ All event listeners registered successfully');
