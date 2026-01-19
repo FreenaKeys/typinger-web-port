@@ -160,6 +160,73 @@
             }
         }
 
+        // ========== カスタムキーマップ読み込み ==========
+        async function loadCustomKeymaps() {
+            try {
+                console.log('📂 Loading custom keymaps...');
+                const response = await fetch('/api/keymap/list');
+                const data = await response.json();
+                
+                console.log('📋 Keymaps response:', data);
+
+                if (!data.ok || !data.keymaps) {
+                    console.log('ℹ️ No custom keymaps available');
+                    return;
+                }
+
+                const customKeymaps = data.keymaps.filter(km => 
+                    km !== 'jis.json' && km !== 'ansi.json' && km !== 'dvorak.json'
+                );
+                
+                if (customKeymaps.length > 0) {
+                    const select = document.getElementById('keymap-select');
+                    
+                    // 「カスタムキーマップ」セクションを追加
+                    let hasCustomGroup = false;
+                    for (let option of select.options) {
+                        if (option.textContent === '--- カスタムキーマップ ---') {
+                            hasCustomGroup = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!hasCustomGroup) {
+                        // グループセパレータ
+                        const separator = document.createElement('option');
+                        separator.textContent = '--- カスタムキーマップ ---';
+                        separator.disabled = true;
+                        select.appendChild(separator);
+                    }
+                    
+                    // カスタムキーマップを追加
+                    customKeymaps.forEach(km => {
+                        const keymapName = km.replace('.json', '');
+                        // 重複チェック
+                        let exists = false;
+                        for (let option of select.options) {
+                            if (option.value === keymapName) {
+                                exists = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!exists) {
+                            const option = document.createElement('option');
+                            option.value = keymapName;
+                            option.textContent = `📌 ${keymapName}`;
+                            select.appendChild(option);
+                        }
+                    });
+                    
+                    console.log(`✅ Loaded ${customKeymaps.length} custom keymaps`);
+                } else {
+                    console.log('ℹ️ No custom keymaps found');
+                }
+            } catch (error) {
+                console.error('❌ Error loading custom keymaps:', error);
+            }
+        }
+
         // ========== イベントリスナー ==========
         document.getElementById('scenario-select').addEventListener('change', (e) => {
             selectedScenario = e.target.value;
@@ -240,6 +307,7 @@
 
         // 初期化
         loadScenarios();
+        loadCustomKeymaps();
     </script>
 </body>
 </html>

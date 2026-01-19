@@ -3,221 +3,613 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>キーマップエディタ - Typinger</title>
+    <title>キーボード配置 - Typinger</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="/static/css/keymap_editor.css">
+    <style>
+        .keyboard-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .keyboard-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .keyboard-title h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .keyboard-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-family: 'Arial', sans-serif;
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .key-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .key {
+            background: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            padding: 12px 8px;
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .key:hover {
+            background: #fff;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        .key-special {
+            background: #3498db;
+            color: white;
+            min-width: 60px;
+        }
+
+        .key-modifier {
+            background: #e74c3c;
+            color: white;
+            min-width: 70px;
+        }
+
+        .key-space {
+            flex: 1;
+            min-width: 300px;
+            background: #34495e;
+            color: white;
+        }
+
+        .info-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .info-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <h1>⌨️ キーマップエディタ</h1>
+                <h1>⌨️ キーボード配置</h1>
                 <nav class="header-links">
                     <a href="/">🎯 ホーム</a>
-                    <a href="/admin">📊 管理画面</a>
-                    <a href="/editor" class="active">⌨️ キーマップ</a>
+                    <a href="/editor" class="active">⌨️ キーボード</a>
                 </nav>
             </div>
         </header>
 
-        <main class="editor-container">
-            <!-- コントロールパネル -->
-            <div class="control-panel">
-                <div class="panel-section">
-                    <label for="keymap-name">キーマップ名：</label>
-                    <input type="text" id="keymap-name" placeholder="my_keymap" value="custom_keymap">
+        <main>
+            <div class="keyboard-container">
+                <div class="keyboard-title">
+                    <h2>標準キーボード配置</h2>
+                    <p>一般的なQWERTY配列のキーボードレイアウトです</p>
                 </div>
 
-                <div class="panel-section">
-                    <button id="btn-new" class="btn btn-primary">新規作成</button>
-                    <button id="btn-load" class="btn btn-secondary">読み込み</button>
-                    <button id="btn-save" class="btn btn-success">保存</button>
-                    <button id="btn-reset" class="btn btn-warning">リセット</button>
+                <!-- キーボード表示 -->
+                <div class="keyboard-layout">
+                    <!-- ファンクションキー行 -->
+                    <div class="key-row">
+                        <span class="key key-special">Esc</span>
+                        <span style="flex: 0.5;"></span>
+                        <span class="key key-special">F1</span>
+                        <span class="key key-special">F2</span>
+                        <span class="key key-special">F3</span>
+                        <span class="key key-special">F4</span>
+                        <span style="flex: 0.3;"></span>
+                        <span class="key key-special">F5</span>
+                        <span class="key key-special">F6</span>
+                        <span class="key key-special">F7</span>
+                        <span class="key key-special">F8</span>
+                        <span style="flex: 0.3;"></span>
+                        <span class="key key-special">F9</span>
+                        <span class="key key-special">F10</span>
+                        <span class="key key-special">F11</span>
+                        <span class="key key-special">F12</span>
+                    </div>
+
+                    <!-- 数字行 -->
+                    <div class="key-row">
+                        <span class="key">`</span>
+                        <span class="key">1</span>
+                        <span class="key">2</span>
+                        <span class="key">3</span>
+                        <span class="key">4</span>
+                        <span class="key">5</span>
+                        <span class="key">6</span>
+                        <span class="key">7</span>
+                        <span class="key">8</span>
+                        <span class="key">9</span>
+                        <span class="key">0</span>
+                        <span class="key">-</span>
+                        <span class="key">=</span>
+                        <span class="key key-special" style="min-width: 80px;">Backspace</span>
+                    </div>
+
+                    <!-- QWERTY行 -->
+                    <div class="key-row">
+                        <span class="key key-special" style="min-width: 60px;">Tab</span>
+                        <span class="key">Q</span>
+                        <span class="key">W</span>
+                        <span class="key">E</span>
+                        <span class="key">R</span>
+                        <span class="key">T</span>
+                        <span class="key">Y</span>
+                        <span class="key">U</span>
+                        <span class="key">I</span>
+                        <span class="key">O</span>
+                        <span class="key">P</span>
+                        <span class="key">[</span>
+                        <span class="key">]</span>
+                        <span class="key key-special" style="min-width: 60px;">\</span>
+                    </div>
+
+                    <!-- ASDF行 -->
+                    <div class="key-row">
+                        <span class="key key-modifier" style="min-width: 75px;">Caps Lock</span>
+                        <span class="key">A</span>
+                        <span class="key">S</span>
+                        <span class="key">D</span>
+                        <span class="key">F</span>
+                        <span class="key">G</span>
+                        <span class="key">H</span>
+                        <span class="key">J</span>
+                        <span class="key">K</span>
+                        <span class="key">L</span>
+                        <span class="key">;</span>
+                        <span class="key">'</span>
+                        <span class="key key-special" style="min-width: 110px;">Enter</span>
+                    </div>
+
+                    <!-- ZXCV行 -->
+                    <div class="key-row">
+                        <span class="key key-modifier" style="min-width: 90px;">Shift</span>
+                        <span class="key">Z</span>
+                        <span class="key">X</span>
+                        <span class="key">C</span>
+                        <span class="key">V</span>
+                        <span class="key">B</span>
+                        <span class="key">N</span>
+                        <span class="key">M</span>
+                        <span class="key">,</span>
+                        <span class="key">.</span>
+                        <span class="key">/</span>
+                        <span class="key key-modifier" style="min-width: 90px;">Shift</span>
+                    </div>
+
+                    <!-- 修飾キー行 -->
+                    <div class="key-row">
+                        <span class="key key-modifier">Ctrl</span>
+                        <span class="key key-modifier">Win</span>
+                        <span class="key key-modifier">Alt</span>
+                        <span class="key key-space">Space</span>
+                        <span class="key key-modifier">Alt</span>
+                        <span class="key key-modifier">Win</span>
+                        <span class="key key-modifier">Menu</span>
+                        <span class="key key-modifier">Ctrl</span>
+                    </div>
                 </div>
 
-                <div class="panel-section">
-                    <label for="format-select">フォーマット：</label>
-                    <select id="format-select">
-                        <option value="json">JSON</option>
-                        <option value="binary">バイナリ（Hex）</option>
-                        <option value="base64">Base64</option>
-                    </select>
-                    <button id="btn-download" class="btn btn-info">ダウンロード</button>
-                    <button id="btn-export" class="btn btn-info">エクスポート</button>
-                </div>
-
-                <div class="panel-section">
-                    <select id="preset-select">
-                        <option value="">プリセットを選択...</option>
-                        <option value="load-default">デフォルト (QWERTY)</option>
-                        <option value="load-dvorak">Dvorak</option>
-                        <option value="load-colemak">Colemak</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- メッセージ表示エリア -->
-            <div id="message-area" class="message-area"></div>
-
-            <!-- キー配置情報 -->
-            <div class="editor-info">
-                <div class="info-item">
-                    <span class="info-label">総キー数：</span>
-                    <span id="total-keys" class="info-value">0</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">バージョン：</span>
-                    <span id="version" class="info-value">1</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">ファイルサイズ（バイナリ）：</span>
-                    <span id="file-size" class="info-value">0 bytes</span>
-                </div>
-            </div>
-
-            <!-- キーグリッド -->
-            <div class="keymap-editor-section">
-                <h2>キーマップエディタ</h2>
-                <div class="key-grid" id="key-grid"></div>
-            </div>
-
-            <!-- キーマッピング設定パネル -->
-            <div class="mapping-panel" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3>🔄 キーマッピング設定</h3>
-                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">下のボックスをクリックしてから、キーボードを押すと自動的に登録されます</p>
-
-                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center;">
-                    <!-- 元のキー選択 -->
-                    <div>
-                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">📍 元のキー:</label>
-                        <div id="source-key-display" style="background: white; border: 3px solid #3498db; padding: 20px; text-align: center; border-radius: 4px; min-height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 18px; transition: all 0.3s ease;">
-                            <span style="color: #999;">ここをクリック</span>
+                <!-- 情報セクション -->
+                <div class="info-section">
+                    <h3>📋 キーボード情報</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">配列タイプ</span>
+                            <span class="info-value">QWERTY（日本語JIS配列対応）</span>
                         </div>
-                        <p style="font-size: 11px; color: #666; margin-top: 8px; text-align: center;">キーボードを押してください</p>
-                    </div>
-
-                    <!-- 矢印 -->
-                    <div style="text-align: center;">
-                        <div style="font-size: 28px; font-weight: bold; color: #3498db;">⇒</div>
-                        <button id="btn-clear-mapping" style="margin-top: 10px; padding: 8px 12px; font-size: 12px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ クリア</button>
-                    </div>
-
-                    <!-- 変更先のキー選択 -->
-                    <div>
-                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">🎯 変更先のキー:</label>
-                        <div id="target-key-display" style="background: white; border: 3px solid #2ecc71; padding: 20px; text-align: center; border-radius: 4px; min-height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 18px; transition: all 0.3s ease;">
-                            <span style="color: #999;">ここをクリック</span>
+                        <div class="info-item">
+                            <span class="info-label">キー数</span>
+                            <span class="info-value">約109キー（JIS標準）</span>
                         </div>
-                        <p style="font-size: 11px; color: #666; margin-top: 8px; text-align: center;">キーボードを押してください</p>
+                        <div class="info-item">
+                            <span class="info-label">言語対応</span>
+                            <span class="info-value">日本語、英語</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">カスタマイズ</span>
+                            <span class="info-value">タイピングページで自動適用</span>
+                        </div>
                     </div>
                 </div>
 
-                <div style="margin-top: 15px; text-align: center;">
-                    <button id="btn-add-mapping" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">✅ このマッピングを追加</button>
+                <!-- 説明テキスト -->
+                <div class="info-section" style="margin-top: 20px; background: #e8f4f8; border-left: 4px solid #3498db;">
+                    <h3>💡 ご利用ガイド</h3>
+                    <ul style="margin: 0; padding-left: 20px; color: #2c3e50; line-height: 1.8;">
+                        <li>このページではキーボード配置を確認できます</li>
+                        <li>カスタムキーマップを作成・編集するには、タイピング画面でキーマップセレクトから「カスタムキーマップ」を選択してください</li>
+                        <li>キーマップエディターで個別のキーマッピングを設定できます</li>
+                        <li>設定したキーマップはタイピング時に自動的に適用されます</li>
+                    </ul>
                 </div>
 
-                <!-- マッピング一覧 -->
-                <div style="margin-top: 20px;">
-                    <h4>現在のマッピング:</h4>
-                    <div id="mappings-list" style="background: white; padding: 10px; border-radius: 4px; min-height: 50px; max-height: 150px; overflow-y: auto;">
-                        <p style="color: #999; text-align: center;">マッピングがまだありません</p>
-                    </div>
-                </div>
-            </div>
+                <!-- キーマッピング設定パネル -->
+                <div class="info-section" style="margin-top: 30px; background: #fff3cd; border-left: 4px solid #ffc107;">
+                    <h3>🔄 キーマッピング設定</h3>
+                    <p style="font-size: 13px; color: #333; margin-bottom: 15px;">キーボード入力を別のキーに置換します。下のボックスをクリックしてから、キーボードを押してください。</p>
 
-            <!-- キー編集パネル -->
-            <div class="edit-panel">
-                <h3>キー設定</h3>
-                <div class="edit-field">
-                    <label for="edit-key-label">キーラベル：</label>
-                    <input type="text" id="edit-key-label" placeholder="例: A, Enter, Space">
-                </div>
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <!-- 元のキー選択 -->
+                        <div>
+                            <label style="display: block; font-weight: bold; margin-bottom: 8px;">📍 元のキー:</label>
+                            <div id="source-key-display" style="background: white; border: 3px solid #3498db; padding: 20px; text-align: center; border-radius: 4px; min-height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 18px; transition: all 0.3s ease;">
+                                <span style="color: #999;">ここをクリック</span>
+                            </div>
+                            <p style="font-size: 11px; color: #666; margin-top: 8px; text-align: center;">キーボードを押してください</p>
+                        </div>
 
-                <div class="edit-field">
-                    <label for="edit-key-code">HID コード：</label>
-                    <input type="number" id="edit-key-code" min="0" max="255" placeholder="0-255">
-                    <span id="code-name" class="code-name"></span>
-                </div>
+                        <!-- 矢印 -->
+                        <div style="text-align: center;">
+                            <div style="font-size: 28px; font-weight: bold; color: #3498db;">⇒</div>
+                            <button id="btn-clear-mapping" style="margin-top: 10px; padding: 8px 12px; font-size: 12px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ クリア</button>
+                        </div>
 
-                <div class="edit-field">
-                    <label>修飾キー：</label>
-                    <div class="modifiers">
-                        <label class="mod-checkbox">
-                            <input type="checkbox" id="mod-shift" data-bit="0">
-                            <span>Shift</span>
-                        </label>
-                        <label class="mod-checkbox">
-                            <input type="checkbox" id="mod-ctrl" data-bit="1">
-                            <span>Ctrl</span>
-                        </label>
-                        <label class="mod-checkbox">
-                            <input type="checkbox" id="mod-alt" data-bit="2">
-                            <span>Alt</span>
-                        </label>
-                        <label class="mod-checkbox">
-                            <input type="checkbox" id="mod-gui" data-bit="3">
-                            <span>GUI</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="edit-field">
-                    <label for="mod-value">修飾値：</label>
-                    <input type="number" id="mod-value" min="0" max="15" value="0" readonly>
-                </div>
-
-                <div class="edit-buttons">
-                    <button id="btn-apply" class="btn btn-success">適用</button>
-                    <button id="btn-clear-key" class="btn btn-warning">クリア</button>
-                </div>
-            </div>
-
-            <!-- 検索・フィルタセクション -->
-            <div class="search-section">
-                <h3>キー検索</h3>
-                <input type="text" id="search-input" placeholder="キー名または番号で検索..." class="search-input">
-                <div id="search-results" class="search-results"></div>
-            </div>
-
-            <!-- インポート/エクスポート -->
-            <div class="io-section">
-                <h2>インポート/エクスポート</h2>
-                <div class="io-control">
-                    <div class="io-item">
-                        <h3>JSONからインポート</h3>
-                        <textarea id="json-import" placeholder="JSON形式のキーマップを貼り付けてください..."></textarea>
-                        <button id="btn-import-json" class="btn btn-secondary">インポート</button>
+                        <!-- 変更先のキー選択 -->
+                        <div>
+                            <label style="display: block; font-weight: bold; margin-bottom: 8px;">🎯 変更先のキー:</label>
+                            <div id="target-key-display" style="background: white; border: 3px solid #2ecc71; padding: 20px; text-align: center; border-radius: 4px; min-height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 18px; transition: all 0.3s ease;">
+                                <span style="color: #999;">ここをクリック</span>
+                            </div>
+                            <p style="font-size: 11px; color: #666; margin-top: 8px; text-align: center;">キーボードを押してください</p>
+                        </div>
                     </div>
 
-                    <div class="io-item">
-                        <h3>JSONエクスポート</h3>
-                        <textarea id="json-export" readonly></textarea>
-                        <button id="btn-copy-json" class="btn btn-info">コピー</button>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <button id="btn-add-mapping" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">✅ このマッピングを追加</button>
                     </div>
 
-                    <div class="io-item">
-                        <h3>バイナリフォーマット</h3>
-                        <textarea id="binary-export" readonly></textarea>
-                        <button id="btn-copy-binary" class="btn btn-info">コピー</button>
+                    <!-- マッピング一覧 -->
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #2c3e50; margin-bottom: 10px;">📋 現在のマッピング:</h4>
+                        <div id="mappings-list" style="background: white; padding: 10px; border-radius: 4px; min-height: 50px; max-height: 200px; overflow-y: auto;">
+                            <p style="color: #999; text-align: center;">マッピングがまだありません</p>
+                        </div>
                     </div>
+
+                    <!-- キーマップ名と保存 -->
+                    <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="display: block; font-weight: bold; margin-bottom: 8px;">💾 キーマップ名:</label>
+                            <input type="text" id="keymap-name" placeholder="my_keymap" style="width: 100%; padding: 10px; border: 2px solid #bdc3c7; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                        </div>
+                        <div style="display: flex; gap: 5px; align-items: flex-end;">
+                            <button id="btn-save-keymap" style="flex: 1; padding: 10px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">💾 保存</button>
+                            <button id="btn-load-keymap" style="flex: 1; padding: 10px 15px; background: #2980b9; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">📂 読み込み</button>
+                        </div>
+                    </div>
+
+                    <!-- 保存済みキーマップ一覧 -->
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #2c3e50; margin-bottom: 10px;">📚 保存済みキーマップ:</h4>
+                        <div id="saved-keymaps-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                            <div style="background: #f0f0f0; padding: 10px; border-radius: 4px; text-align: center; color: #999;">
+                                読み込み中...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- メッセージ表示 -->
+                    <div id="message-area" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none;"></div>
                 </div>
-            </div>
-
-            <!-- 既存キーマップリスト -->
-            <div class="keymaps-list-section">
-                <h2>保存済みキーマップ</h2>
-                <div id="keymaps-list" class="keymaps-list"></div>
             </div>
         </main>
 
-        <footer class="footer">
-            <p>&copy; 2024 Typinger - Japanese Typing Practice. All rights reserved.</p>
+        <footer>
+            <p>Typinger Web版 - キーボード配置表</p>
         </footer>
     </div>
 
-    <!-- ファイルアップロード用隠しフォーム -->
-    <input type="file" id="file-upload" accept=".json" style="display: none;">
+    <script>
+        console.log('✅ Keyboard editor page loaded');
 
-    <script src="/static/js/keymap_editor.js"></script>
+        // グローバル変数
+        let mappingMode = null;
+        let sourceKeyValue = null;
+        let targetKeyValue = null;
+        let currentMappings = {};
+
+        // メッセージ表示
+        function showMessage(text, type = 'info') {
+            const messageArea = document.getElementById('message-area');
+            messageArea.textContent = text;
+            messageArea.style.background = type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1';
+            messageArea.style.color = type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460';
+            messageArea.style.display = 'block';
+            console.log(`[${type.toUpperCase()}] ${text}`);
+            setTimeout(() => {
+                messageArea.style.display = 'none';
+            }, 3000);
+        }
+
+        // キーマップリストを読み込み
+        async function loadSavedKeymaps() {
+            try {
+                console.log('📂 Loading saved keymaps...');
+                const response = await fetch('/api/keymap/list');
+                const data = await response.json();
+
+                const container = document.getElementById('saved-keymaps-list');
+                
+                if (!data.ok || !data.keymaps || data.keymaps.length === 0) {
+                    container.innerHTML = '<div style="background: #f0f0f0; padding: 10px; border-radius: 4px; text-align: center; color: #999; grid-column: 1/-1;">保存済みキーマップがありません</div>';
+                    return;
+                }
+
+                const customKeymaps = data.keymaps.filter(km => 
+                    km !== 'jis.json' && km !== 'ansi.json' && km !== 'dvorak.json'
+                );
+
+                if (customKeymaps.length === 0) {
+                    container.innerHTML = '<div style="background: #f0f0f0; padding: 10px; border-radius: 4px; text-align: center; color: #999; grid-column: 1/-1;">保存済みキーマップがありません</div>';
+                    return;
+                }
+
+                container.innerHTML = customKeymaps.map(km => {
+                    const name = km.replace('.json', '');
+                    return `
+                        <div style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #bdc3c7; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: bold; color: #2c3e50;">${name}</span>
+                            <div style="display: flex; gap: 5px;">
+                                <button onclick="loadKeymap('${name}')" style="padding: 5px 10px; background: #2980b9; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">読込</button>
+                                <button onclick="deleteKeymap('${name}')" style="padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">削除</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                console.log(`✅ Loaded ${customKeymaps.length} keymaps`);
+            } catch (error) {
+                console.error('❌ Error loading keymaps:', error);
+                showMessage('キーマップリストの読み込みに失敗しました', 'error');
+            }
+        }
+
+        // キーマップを読み込み
+        async function loadKeymap(name) {
+            try {
+                console.log(`📂 Loading keymap: ${name}`);
+                const response = await fetch(`/api/keymap/${name}.json`);
+                const data = await response.json();
+
+                if (data.keymap && data.keymap.mappings) {
+                    currentMappings = data.keymap.mappings;
+                    document.getElementById('keymap-name').value = name;
+                    updateMappingsList();
+                    showMessage(`✅ キーマップ '${name}' を読み込みました`, 'success');
+                } else {
+                    showMessage('キーマップの読み込みに失敗しました', 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error loading keymap:', error);
+                showMessage('キーマップの読み込みに失敗しました', 'error');
+            }
+        }
+
+        // キーマップを削除
+        async function deleteKeymap(name) {
+            if (!confirm(`'${name}' を削除してもよろしいですか？`)) {
+                return;
+            }
+
+            try {
+                console.log(`🗑️ Deleting keymap: ${name}`);
+                const response = await fetch(`/api/keymap/${name}.json`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showMessage(`✅ キーマップ '${name}' を削除しました`, 'success');
+                    loadSavedKeymaps();
+                } else {
+                    showMessage('キーマップの削除に失敗しました', 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting keymap:', error);
+                showMessage('キーマップの削除に失敗しました', 'error');
+            }
+        }
+
+        // マッピング一覧を更新
+        function updateMappingsList() {
+            const mappingsList = document.getElementById('mappings-list');
+            
+            if (Object.keys(currentMappings).length === 0) {
+                mappingsList.innerHTML = '<p style="color: #999; text-align: center;">マッピングがまだありません</p>';
+                return;
+            }
+
+            mappingsList.innerHTML = Object.entries(currentMappings).map(([from, to]) => `
+                <div style="padding: 8px; margin: 5px 0; background: #f0f0f0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span><strong>${from}</strong> → <strong>${to}</strong></span>
+                    <button onclick="removeMapping('${from}')" style="padding: 3px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">削除</button>
+                </div>
+            `).join('');
+        }
+
+        // マッピング削除
+        function removeMapping(key) {
+            delete currentMappings[key];
+            updateMappingsList();
+            showMessage(`マッピング '${key}' を削除しました`, 'success');
+        }
+
+        // マッピング追加
+        function addMapping() {
+            if (!sourceKeyValue || !targetKeyValue) {
+                showMessage('元のキーと変更先のキーを両方選択してください', 'error');
+                return;
+            }
+
+            currentMappings[sourceKeyValue] = targetKeyValue;
+            console.log(`✅ Mapping added: ${sourceKeyValue} → ${targetKeyValue}`);
+            updateMappingsList();
+            clearMapping();
+            showMessage(`マッピング '${sourceKeyValue} → ${targetKeyValue}' を追加しました`, 'success');
+        }
+
+        // キーマップ保存
+        async function saveKeymap() {
+            const name = document.getElementById('keymap-name').value.trim();
+            
+            if (!name) {
+                showMessage('キーマップ名を入力してください', 'error');
+                return;
+            }
+
+            if (Object.keys(currentMappings).length === 0) {
+                showMessage('少なくとも1つのマッピングを追加してください', 'error');
+                return;
+            }
+
+            try {
+                console.log(`💾 Saving keymap: ${name}`);
+                const response = await fetch('/api/keymap/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        filename: name,
+                        keymap: {
+                            version: 1,
+                            keys: [],
+                            mappings: currentMappings
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.ok) {
+                    showMessage(`✅ キーマップ '${name}' を保存しました`, 'success');
+                    loadSavedKeymaps();
+                } else {
+                    showMessage(`保存エラー: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('❌ Error saving keymap:', error);
+                showMessage('キーマップの保存に失敗しました', 'error');
+            }
+        }
+
+        // マッピング設定クリア
+        function clearMapping() {
+            sourceKeyValue = null;
+            targetKeyValue = null;
+            document.getElementById('source-key-display').innerHTML = '<span style="color: #999;">ここをクリック</span>';
+            document.getElementById('source-key-display').style.background = 'white';
+            document.getElementById('target-key-display').innerHTML = '<span style="color: #999;">ここをクリック</span>';
+            document.getElementById('target-key-display').style.background = 'white';
+            mappingMode = null;
+        }
+
+        // イベントリスナー
+        document.getElementById('source-key-display').addEventListener('click', () => {
+            mappingMode = 'source';
+            document.getElementById('source-key-display').style.background = '#fff3cd';
+            document.getElementById('source-key-display').innerHTML = '<span style="color: #856404;">🔴 キー入力待機中...</span>';
+            console.log('📍 Waiting for source key input...');
+        });
+
+        document.getElementById('target-key-display').addEventListener('click', () => {
+            mappingMode = 'target';
+            document.getElementById('target-key-display').style.background = '#d1ecf1';
+            document.getElementById('target-key-display').innerHTML = '<span style="color: #0c5460;">🔴 キー入力待機中...</span>';
+            console.log('🎯 Waiting for target key input...');
+        });
+
+        document.getElementById('btn-clear-mapping').addEventListener('click', clearMapping);
+
+        document.getElementById('btn-add-mapping').addEventListener('click', addMapping);
+
+        document.getElementById('btn-save-keymap').addEventListener('click', saveKeymap);
+
+        document.getElementById('btn-load-keymap').addEventListener('click', () => {
+            const name = document.getElementById('keymap-name').value.trim();
+            if (name) {
+                loadKeymap(name);
+            } else {
+                showMessage('キーマップ名を入力してください', 'error');
+            }
+        });
+
+        // グローバルキー入力リスナー
+        document.addEventListener('keydown', (e) => {
+            if (!mappingMode) return;
+            
+            e.preventDefault();
+            const keyName = e.key;
+            
+            console.log(`⌨️ Key pressed in ${mappingMode} mode: ${keyName} (code: ${e.code})`);
+
+            if (mappingMode === 'source') {
+                sourceKeyValue = keyName;
+                document.getElementById('source-key-display').innerHTML = `<span>${keyName}</span>`;
+                document.getElementById('source-key-display').style.background = '#d4edda';
+                console.log(`✅ Source key set: ${keyName}`);
+            } else if (mappingMode === 'target') {
+                targetKeyValue = keyName;
+                document.getElementById('target-key-display').innerHTML = `<span>${keyName}</span>`;
+                document.getElementById('target-key-display').style.background = '#d4edda';
+                console.log(`✅ Target key set: ${keyName}`);
+            }
+
+            mappingMode = null;
+        }, true);
+
+        // 初期化
+        loadSavedKeymaps();
+    </script>
 </body>
 </html>
