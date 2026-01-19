@@ -692,9 +692,9 @@
 
             // グローバルキー入力リスナー
             document.addEventListener('keydown', (e) => {
-                if (!isAwaitingKey) return;
+                if (!isAwaitingKey || mappingMode !== 'target') return;
                 
-                console.log(`⌨️ Key event triggered - mappingMode: ${mappingMode}, key: ${e.key}`);
+                console.log(`⌨️ Physical keyboard key pressed: ${e.key}`);
                 
                 // 特殊キーは無視
                 if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'Escape') {
@@ -707,47 +707,35 @@
                 e.stopImmediatePropagation();
                 
                 const keyName = e.key;
-                console.log(`✅ Captured key: "${keyName}" (code: ${e.code})`);
+                console.log(`✅ Captured replacement key: "${keyName}" (code: ${e.code})`);
                 
-                const sourceDisplay = document.getElementById('source-key-display');
+                // 置き換え先キーとして設定
+                targetKeyValue = keyName;
                 const targetDisplay = document.getElementById('target-key-display');
-
-                if (mappingMode === 'source') {
-                    sourceKeyValue = keyName;
-                    if (sourceDisplay) {
-                        sourceDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyName}</span>`;
-                        sourceDisplay.style.background = '#d4edda';
-                        sourceDisplay.style.borderColor = '#27ae60';
-                    }
-                    console.log(`✅ Source key set to: "${keyName}"`);
-                    
-                    // 自動的に変更先キー入力モードに遷移
-                    console.log('🔄 Auto-transitioning to target key input...');
-                    mappingMode = 'target';
-                    isAwaitingKey = true;
-                    if (targetDisplay) {
-                        targetDisplay.style.background = '#fff3cd';
-                        targetDisplay.style.borderColor = '#f39c12';
-                        targetDisplay.innerHTML = '<span style="color: #856404;">🔴 キー入力待機中...</span>';
-                    }
-                    console.log('🎯 Waiting for target key input...');
-                    
-                } else if (mappingMode === 'target') {
-                    targetKeyValue = keyName;
-                    if (targetDisplay) {
-                        targetDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyName}</span>`;
-                        targetDisplay.style.background = '#d4edda';
-                        targetDisplay.style.borderColor = '#27ae60';
-                    }
-                    console.log(`✅ Target key set to: "${keyName}"`);
-                    
-                    // UI更新：置き換え結果を表示
-                    updateMappingPreview();
-                    
-                    // キー入力待機を終了
-                    mappingMode = null;
-                    isAwaitingKey = false;
+                if (targetDisplay) {
+                    targetDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyName}</span>`;
+                    targetDisplay.style.background = '#d4edda';
+                    targetDisplay.style.borderColor = '#27ae60';
                 }
+                console.log(`✅ Target key set to: "${keyName}"`);
+                
+                // 画面上のキーボードのハイライトを解除
+                const highlightedKeys = document.querySelectorAll('.key');
+                highlightedKeys.forEach(key => {
+                    if (key.style.background === 'rgb(255, 193, 7)' || key.style.boxShadow.includes('ff9800')) {
+                        key.style.background = '';
+                        key.style.boxShadow = '';
+                    }
+                });
+                console.log('🔄 Cleared keyboard highlights');
+                
+                // UI更新：置き換え結果を表示
+                updateMappingPreview();
+                
+                // キー入力待機を終了
+                mappingMode = null;
+                isAwaitingKey = false;
+                console.log('✅ Mapping ready for addition');
             }, true);
 
             console.log('✅ All event listeners registered successfully');
@@ -794,54 +782,40 @@
                 // クリックイベントを追加
                 keyElement.style.cursor = 'pointer';
                 keyElement.addEventListener('click', () => {
-                    if (!mappingMode) {
-                        console.warn('⚠️ No mapping mode active');
+                    if (mappingMode !== null) {
+                        console.warn('⚠️ Mapping already in progress');
                         return;
                     }
                     
                     // キーの値を取得（大文字→小文字に統一）
                     const keyValue = keyText.toLowerCase();
-                    console.log(`🖱️ Keyboard key clicked: "${keyText}" (normalized: "${keyValue}"), mode: ${mappingMode}`);
+                    console.log(`🖱️ Keyboard key clicked: "${keyText}" (normalized: "${keyValue}")`);
                     
+                    // 元のキーとして設定
+                    sourceKeyValue = keyValue;
                     const sourceDisplay = document.getElementById('source-key-display');
-                    const targetDisplay = document.getElementById('target-key-display');
-                    
-                    if (mappingMode === 'source') {
-                        sourceKeyValue = keyValue;
-                        if (sourceDisplay) {
-                            sourceDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyValue}</span>`;
-                            sourceDisplay.style.background = '#d4edda';
-                            sourceDisplay.style.borderColor = '#27ae60';
-                        }
-                        console.log(`✅ Source key set from keyboard click: "${keyValue}"`);
-                        
-                        // 自動的に変更先キー入力モードに遷移
-                        console.log('🔄 Auto-transitioning to target key input...');
-                        mappingMode = 'target';
-                        isAwaitingKey = true;
-                        if (targetDisplay) {
-                            targetDisplay.style.background = '#fff3cd';
-                            targetDisplay.style.borderColor = '#f39c12';
-                            targetDisplay.innerHTML = '<span style="color: #856404;">🔴 キー入力待機中...</span>';
-                        }
-                        console.log('🎯 Waiting for target key input...');
-                        
-                    } else if (mappingMode === 'target') {
-                        targetKeyValue = keyValue;
-                        if (targetDisplay) {
-                            targetDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyValue}</span>`;
-                            targetDisplay.style.background = '#d4edda';
-                            targetDisplay.style.borderColor = '#27ae60';
-                        }
-                        console.log(`✅ Target key set from keyboard click: "${keyValue}"`);
-                        
-                        // UI更新：置き換え結果を表示
-                        updateMappingPreview();
-                        
-                        // キー入力待機を終了
-                        mappingMode = null;
-                        isAwaitingKey = false;
+                    if (sourceDisplay) {
+                        sourceDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyValue}</span>`;
+                        sourceDisplay.style.background = '#d4edda';
+                        sourceDisplay.style.borderColor = '#27ae60';
                     }
+                    console.log(`✅ Source key set: "${keyValue}"`);
+                    
+                    // クリックされたキーを強調表示
+                    keyElement.style.background = '#ffc107';
+                    keyElement.style.boxShadow = '0 0 10px #ff9800';
+                    
+                    // 置き換え先キー入力モードに遷移
+                    console.log('🔄 Waiting for replacement key from physical keyboard...');
+                    mappingMode = 'target';
+                    isAwaitingKey = true;
+                    const targetDisplay = document.getElementById('target-key-display');
+                    if (targetDisplay) {
+                        targetDisplay.style.background = '#fff3cd';
+                        targetDisplay.style.borderColor = '#f39c12';
+                        targetDisplay.innerHTML = '<span style="color: #856404;">🔴 置き換え先キーを入力...</span>';
+                    }
+                    console.log('🎯 Ready for replacement key input from physical keyboard...');
                 });
             });
             
