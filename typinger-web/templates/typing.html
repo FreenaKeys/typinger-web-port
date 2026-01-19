@@ -17,17 +17,44 @@
             <!-- タイピング画面 -->
             <section id="typing-screen" class="screen active">
                 <div class="typing-container">
-                    <!-- キーマップ設定 -->
+                    <!-- キーマップ設定 + カスタムマッピングプレビュー -->
                     <div class="keymap-setting" style="margin-bottom: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
-                        <label for="keymap-select" style="display: block; margin-bottom: 10px; font-weight: bold;">
-                            ⌨️ キーボード配列:
-                        </label>
-                        <select id="keymap-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px;">
-                            <option value="jis">JIS配列 (日本語)</option>
-                            <option value="ansi">ANSI配列</option>
-                            <option value="dvorak">Dvorak配列</option>
-                        </select>
-                        <p id="keymap-info" style="margin-top: 10px; font-size: 12px; color: #666;">デフォルト: JIS配列</p>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+                            <div style="flex: 1;">
+                                <label for="keymap-select" style="display: block; margin-bottom: 10px; font-weight: bold;">
+                                    ⌨️ キーボード配列:
+                                </label>
+                                <select id="keymap-select" style="width: 100%; padding: 8px; font-size: 14px; border-radius: 4px;">
+                                    <option value="jis">JIS配列 (日本語)</option>
+                                    <option value="ansi">ANSI配列</option>
+                                    <option value="dvorak">Dvorak配列</option>
+                                </select>
+                                <p id="keymap-info" style="margin-top: 10px; font-size: 12px; color: #666;">デフォルト: JIS配列</p>
+                            </div>
+                            <!-- カスタムマッピングプレビュー -->
+                            <div id="custom-mapping-preview" style="flex: 0 0 auto; padding: 10px; background: white; border-radius: 4px; border: 1px solid #bdc3c7; min-width: 200px; display: none;">
+                                <p style="margin: 0 0 8px 0; font-size: 11px; font-weight: bold; color: #2c3e50;">🎯 カスタムマッピング</p>
+                                <div id="preview-mappings" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;">
+                                    <!-- マッピングが表示される -->
+                                </div>
+                                <button id="btn-edit-mapping" style="padding: 4px 10px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; width: 100%;">
+                                    編集
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- マッピング編集モーダル -->
+                    <div id="mapping-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; padding: 20px;">
+                        <div style="background: white; border-radius: 8px; padding: 20px; max-width: 500px; margin: 50px auto; max-height: 80vh; overflow-y: auto;">
+                            <h3 style="margin-top: 0;">🎯 カスタムマッピング編集</h3>
+                            <div id="edit-mapping-items" style="margin-bottom: 20px;">
+                                <!-- 編集アイテムが表示される -->
+                            </div>
+                            <button id="btn-close-modal" style="width: 100%; padding: 10px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                                ✓ 閉じる
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 目標テキスト表示 -->
@@ -125,6 +152,8 @@
         let currentProgress = '';
         let currentKeymap = 'jis';
         let keymapData = null;
+        let editingKey = null;
+        let editingValue = null;
 
         console.log('🎬 Typing page loaded');
         console.log('  Session ID:', SESSION_ID);
@@ -234,6 +263,7 @@
                 'dvorak': 'Dvorak配列'
             };
             document.getElementById('current-keymap-display').textContent = presetNames[preset] || preset;
+            updateMappingPreview();
         });
 
         // ========== ストレージアクセス関数（セキュリティエラー対応）==========
@@ -270,8 +300,126 @@
             // setTimeout でセレクトが更新されるまで待つ
             setTimeout(() => {
                 document.getElementById('keymap-select').value = savedKeymap;
+                updateMappingPreview();
             }, 100);
         }
+        
+        // カスタムキーマップデータ復元
+        const savedKeymapData = safeGetStorage('currentKeymapData');
+        if (savedKeymapData) {
+            try {
+                const parsed = JSON.parse(savedKeymapData);
+                if (parsed.mappings && Object.keys(parsed.mappings).length > 0) {
+                    keymapData = parsed;
+                    updateMappingPreview();
+                    console.log('💾 Restored keymap data from storage');
+                }
+            } catch (e) {
+                console.warn('⚠️ Failed to restore keymap data:', e);
+            }
+        }
+
+        // ========== カスタムマッピングプレビュー処理 ==========
+        function updateMappingPreview() {
+            const preview = document.getElementById('custom-mapping-preview');
+            const mappings = keymapData?.mappings;
+            
+            if (mappings && Object.keys(mappings).length > 0) {
+                preview.style.display = 'block';
+                const previewMappings = document.getElementById('preview-mappings');
+                previewMappings.innerHTML = Object.entries(mappings)
+                    .slice(0, 5)
+                    .map(([from, to]) => `
+                        <span style="background: #ecf0f1; padding: 3px 8px; border-radius: 3px; font-size: 11px;">
+                            <strong>${from}</strong> → <strong>${to}</strong>
+                        </span>
+                    `).join('');
+                
+                if (Object.keys(mappings).length > 5) {
+                    previewMappings.innerHTML += `<span style="font-size: 11px; color: #7f8c8d;">他 ${Object.keys(mappings).length - 5} 個</span>`;
+                }
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // マッピング編集UI表示
+        function showMappingEditor() {
+            const modal = document.getElementById('mapping-modal');
+            const editItems = document.getElementById('edit-mapping-items');
+            const mappings = keymapData?.mappings || {};
+            
+            if (Object.keys(mappings).length === 0) {
+                editItems.innerHTML = '<p style="color: #999; text-align: center;">マッピングなし</p>';
+            } else {
+                editItems.innerHTML = Object.entries(mappings)
+                    .map(([from, to]) => `
+                        <div style="background: #f8f9fa; padding: 12px; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span style="font-weight: bold; font-size: 14px;">${from}</span>
+                                <span style="color: #95a5a6; margin: 0 8px;">→</span>
+                                <span style="color: #27ae60; font-weight: bold; font-size: 14px; cursor: pointer; text-decoration: underline;" onclick="editMappingValue('${from}', '${to}')" title="クリックで変更">${to}</span>
+                            </div>
+                            <button onclick="removeMapping('${from}')" style="padding: 4px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                                削除
+                            </button>
+                        </div>
+                    `).join('');
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // マッピング値を編集
+        function editMappingValue(from, to) {
+            editingKey = from;
+            editingValue = to;
+            console.log(`✏️ Editing mapping: ${from} → ${to}`);
+            
+            const editItems = document.getElementById('edit-mapping-items');
+            editItems.innerHTML = `
+                <div style="background: #fff3cd; padding: 12px; border-radius: 4px; border: 2px solid #f39c12;">
+                    <p style="margin: 0 0 10px 0; font-weight: bold; color: #f39c12;">⌨️ \"${from}\" の新しい値を入力してください...</p>
+                    <p style="margin: 0; font-size: 12px; color: #7f8c8d;">キーボードのキーを1つ押してください</p>
+                </div>
+            `;
+            
+            // キー入力待機 (一度だけ)
+            const handler = (e) => {
+                e.preventDefault();
+                const newValue = e.key;
+                console.log(`✅ New value captured: ${newValue}`);
+                
+                keymapData.mappings[from] = newValue;
+                updateMappingPreview();
+                
+                // UI再表示
+                setTimeout(() => {
+                    showMappingEditor();
+                }, 100);
+                
+                document.removeEventListener('keydown', handler, true);
+            };
+            
+            document.addEventListener('keydown', handler, true);
+        }
+
+        // マッピング削除
+        function removeMapping(key) {
+            delete keymapData.mappings[key];
+            updateMappingPreview();
+            showMappingEditor();
+            console.log(`🗑️ Removed mapping: ${key}`);
+        }
+
+        // イベントリスナー
+        document.getElementById('btn-edit-mapping').addEventListener('click', showMappingEditor);
+        document.getElementById('btn-close-modal').addEventListener('click', () => {
+            document.getElementById('mapping-modal').style.display = 'none';
+            editingKey = null;
+            editingValue = null;
+        });
+
         console.log('  Target Rubi:', TARGET_RUBI);
 
         // ========== UI更新関数 ==========
