@@ -521,12 +521,17 @@
                 return;
             }
             
+            console.log('🔄 updateMappingsList called');
+            console.log('   currentMappings:', currentMappings);
+            console.log('   keys count:', Object.keys(currentMappings).length);
+            
             if (Object.keys(currentMappings).length === 0) {
                 mappingsList.innerHTML = '<p style="color: #999; text-align: center;">マッピングがまだありません</p>';
+                console.log('📋 No mappings, showing placeholder');
                 return;
             }
 
-            mappingsList.innerHTML = Object.entries(currentMappings).map(([from, to]) => `
+            const html = Object.entries(currentMappings).map(([from, to]) => `
                 <div style="padding: 12px; margin: 8px 0; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #28a745;">
                     <span style="font-size: 14px;">
                         <span style="font-weight: bold; color: #2c3e50; font-size: 16px;">${from}</span>
@@ -537,6 +542,9 @@
                 </div>
             `).join('');
             
+            console.log('📝 Generated HTML:', html.substring(0, 100) + '...');
+            mappingsList.innerHTML = html;
+            console.log('✅ HTML updated in DOM');
             console.log(`📋 Updated mappings list: ${Object.keys(currentMappings).length} items`);
         }
 
