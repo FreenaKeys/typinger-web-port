@@ -32,28 +32,20 @@
                                 <p id="keymap-info" style="margin-top: 10px; font-size: 12px; color: #666;">デフォルト: JIS配列</p>
                             </div>
                             <!-- カスタムマッピングプレビュー -->
-                            <div id="custom-mapping-preview" style="flex: 0 0 auto; padding: 10px; background: white; border-radius: 4px; border: 1px solid #bdc3c7; min-width: 200px; display: none;">
-                                <p style="margin: 0 0 8px 0; font-size: 11px; font-weight: bold; color: #2c3e50;">🎯 カスタムマッピング</p>
-                                <div id="preview-mappings" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;">
-                                    <!-- マッピングが表示される -->
+                            <div id="custom-mapping-preview" style="flex: 0 0 auto; padding: 10px; background: white; border-radius: 4px; border: 1px solid #bdc3c7; min-width: 250px; max-width: 400px; display: none;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <p style="margin: 0; font-size: 11px; font-weight: bold; color: #2c3e50;">🎯 カスタムマッピング</p>
+                                    <button id="btn-toggle-mappings" style="padding: 3px 8px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 10px;">
+                                        展開
+                                    </button>
                                 </div>
-                                <button id="btn-edit-mapping" style="padding: 4px 10px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; width: 100%;">
-                                    編集
-                                </button>
+                                <div id="preview-mappings-summary" style="font-size: 11px; color: #7f8c8d; margin-bottom: 8px;">
+                                    <!-- サマリー表示 -->
+                                </div>
+                                <div id="preview-mappings-detail" style="display: none; max-height: 300px; overflow-y: auto; margin-top: 10px;">
+                                    <!-- 詳細マッピング一覧 -->
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- マッピング編集モーダル -->
-                    <div id="mapping-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; padding: 20px;">
-                        <div style="background: white; border-radius: 8px; padding: 20px; max-width: 500px; margin: 50px auto; max-height: 80vh; overflow-y: auto;">
-                            <h3 style="margin-top: 0;">🎯 カスタムマッピング編集</h3>
-                            <div id="edit-mapping-items" style="margin-bottom: 20px;">
-                                <!-- 編集アイテムが表示される -->
-                            </div>
-                            <button id="btn-close-modal" style="width: 100%; padding: 10px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                                ✓ 閉じる
-                            </button>
                         </div>
                     </div>
 
@@ -335,6 +327,8 @@
         console.log('📊 Initial keymapData:', keymapData);
 
         // ========== カスタムマッピングプレビュー処理 ==========
+        let mappingsExpanded = false;
+        
         function updateMappingPreview() {
             const preview = document.getElementById('custom-mapping-preview');
             
@@ -346,7 +340,6 @@
             }
             
             if (!keymapData.mappings) {
-                console.warn('⚠️ keymapData.mappings is null, initializing');
                 keymapData.mappings = {};
             }
             
@@ -359,75 +352,49 @@
             if (mappingCount > 0) {
                 console.log('✅ Showing preview (has mappings)');
                 preview.style.display = 'block';
-                const previewMappings = document.getElementById('preview-mappings');
                 
-                const html = Object.entries(mappings)
-                    .slice(0, 5)
-                    .map(([from, to]) => {
-                        console.log(`  📍 Rendering mapping: "${from}" → "${to}"`);
-                        return `
-                            <span style="background: #ecf0f1; padding: 3px 8px; border-radius: 3px; font-size: 11px;">
-                                <strong>${from}</strong> → <strong>${to}</strong>
-                            </span>
-                        `;
-                    }).join('');
+                // サマリー表示
+                const summaryEl = document.getElementById('preview-mappings-summary');
+                summaryEl.textContent = `${mappingCount}個のマッピング`;
                 
-                let finalHtml = html;
-                if (mappingCount > 5) {
-                    finalHtml += `<span style="font-size: 11px; color: #7f8c8d;">他 ${mappingCount - 5} 個</span>`;
-                }
-                
-                previewMappings.innerHTML = finalHtml;
-                console.log('✅ Preview HTML updated');
-            } else {
-                console.log('❌ Hiding preview (no mappings)');
-                preview.style.display = 'none';
-            }
-        }
-
-        // マッピング編集UI表示
-        function showMappingEditor() {
-            const modal = document.getElementById('mapping-modal');
-            const editItems = document.getElementById('edit-mapping-items');
-            
-            // keymapData を確認して初期化
-            if (!keymapData) {
-                console.error('❌ keymapData is null');
-                keymapData = { version: 1, keys: [], mappings: {} };
-            }
-            if (!keymapData.mappings) {
-                console.warn('⚠️ keymapData.mappings is null, initializing');
-                keymapData.mappings = {};
-            }
-            
-            const mappings = keymapData.mappings || {};
-            console.log('📊 Current mappings:', mappings);
-            
-            if (Object.keys(mappings).length === 0) {
-                editItems.innerHTML = '<p style="color: #999; text-align: center;">マッピングなし</p>';
-            } else {
-                editItems.innerHTML = Object.entries(mappings)
+                // 詳細リスト生成
+                const detailEl = document.getElementById('preview-mappings-detail');
+                detailEl.innerHTML = Object.entries(mappings)
                     .map(([from, to]) => `
-                        <div style="background: #f8f9fa; padding: 12px; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                            <div style="cursor: pointer; flex: 1;" onclick="window.editMappingValue('${from}', '${to}')">
-                                <span style="font-weight: bold; font-size: 14px;">${from}</span>
-                                <span style="color: #95a5a6; margin: 0 8px;">→</span>
-                                <span style="color: #27ae60; font-weight: bold; font-size: 14px; text-decoration: underline;">${to}</span>
-                                <span style="font-size: 10px; color: #bdc3c7; margin-left: 8px;">(クリックで変更)</span>
+                        <div style="background: #f8f9fa; padding: 8px; border-radius: 3px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1; cursor: pointer;" onclick="window.editMappingValueInline('${from}', '${to}')">
+                                <span style="font-weight: bold; font-size: 12px;">${from}</span>
+                                <span style="color: #95a5a6; margin: 0 5px;">→</span>
+                                <span style="color: #27ae60; font-weight: bold; font-size: 12px; text-decoration: underline;">${to}</span>
                             </div>
-                            <button onclick="window.removeMapping('${from}')" style="padding: 4px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                            <button onclick="window.removeMappingInline('${from}')" style="padding: 2px 6px; background: #e74c3c; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 10px;">
                                 削除
                             </button>
                         </div>
                     `).join('');
+                
+            } else {
+                preview.style.display = 'none';
             }
-            
-            modal.style.display = 'block';
-            console.log('📋 Mapping editor modal displayed');
         }
-
-        // マッピング値を編集
-        function editMappingValue(from, to) {
+        
+        // 展開/折りたたみトグル
+        function toggleMappingsDetail() {
+            mappingsExpanded = !mappingsExpanded;
+            const detailEl = document.getElementById('preview-mappings-detail');
+            const btnEl = document.getElementById('btn-toggle-mappings');
+            
+            if (mappingsExpanded) {
+                detailEl.style.display = 'block';
+                btnEl.textContent = '折畳';
+            } else {
+                detailEl.style.display = 'none';
+                btnEl.textContent = '展開';
+            }
+        }
+        
+        // インラインでマッピング編集
+        function editMappingValueInline(from, to) {
             if (!keymapData) {
                 console.error('❌ keymapData is not initialized');
                 alert('キーマップデータが初期化されていません');
@@ -436,40 +403,32 @@
             
             editingKey = from;
             editingValue = to;
-            console.log(`✏️ Editing mapping: ${from} → ${to}`);
-            console.log('📊 Current keymapData:', keymapData);
+            console.log(`✏️ Editing mapping inline: ${from} → ${to}`);
             
-            const editItems = document.getElementById('edit-mapping-items');
-            editItems.innerHTML = `
-                <div style="background: #fff3cd; padding: 12px; border-radius: 4px; border: 2px solid #f39c12;">
-                    <p style="margin: 0 0 10px 0; font-weight: bold; color: #f39c12;">⌨️ "${from}" の新しい値を入力してください...</p>
-                    <p style="margin: 0; font-size: 12px; color: #7f8c8d;">キーボードのキーを1つ押してください</p>
+            const detailEl = document.getElementById('preview-mappings-detail');
+            const tempHtml = detailEl.innerHTML;
+            
+            detailEl.innerHTML = `
+                <div style="background: #fff3cd; padding: 12px; border-radius: 4px; border: 2px solid #f39c12; text-align: center;">
+                    <p style="margin: 0 0 8px 0; font-weight: bold; color: #f39c12; font-size: 11px;">⌨️ "${from}" の新しい値を入力...</p>
+                    <p style="margin: 0; font-size: 10px; color: #7f8c8d;">キーボードのキーを1つ押してください</p>
                 </div>
             `;
             
-            // タイピング入力フィールドをblur（フォーカス喪失）
+            // タイピング入力をブラー
             const typingInput = document.getElementById('typing-input');
-            if (typingInput) {
-                typingInput.blur();
-                console.log('💤 Blurred typing input');
-            }
+            if (typingInput) typingInput.blur();
             
-            // キー入力待機
             let handled = false;
             const handler = (e) => {
-                if (handled) return; // 重複実行防止
+                if (handled) return;
                 
-                // 制御キーは無視
-                if (e.ctrlKey || e.altKey || e.metaKey) {
-                    console.warn('⚠️ Control key ignored');
-                    return;
-                }
+                if (e.ctrlKey || e.altKey || e.metaKey) return;
                 
                 if (e.key === 'Escape') {
                     handled = true;
-                    console.log('🚫 Editing cancelled with Escape');
+                    detailEl.innerHTML = tempHtml;
                     document.removeEventListener('keydown', handler, true);
-                    showMappingEditor();
                     return;
                 }
                 
@@ -478,65 +437,35 @@
                 handled = true;
                 
                 const newValue = e.key;
-                console.log(`✅ New value captured: "${newValue}" (code: ${e.code})`);
-                console.log(`🔄 Updating: "${from}" → "${newValue}"`);
+                console.log(`✅ New value: "${newValue}"`);
                 
-                // keymapData を確認
-                if (!keymapData.mappings) {
-                    console.error('❌ keymapData.mappings does not exist');
-                    keymapData.mappings = {};
-                }
-                
-                // 更新
-                const oldValue = keymapData.mappings[from];
+                if (!keymapData.mappings) keymapData.mappings = {};
                 keymapData.mappings[from] = newValue;
-                console.log(`✅ Mapping updated: "${from}" "${oldValue}" → "${newValue}"`);
-                console.log('📊 Full mappings now:', keymapData.mappings);
                 
-                // UI更新
+                console.log('✅ Mapping updated:', keymapData.mappings);
                 updateMappingPreview();
-                console.log('🎨 Preview updated');
-                
-                // UI再表示
-                setTimeout(() => {
-                    showMappingEditor();
-                    console.log('📋 Editor reopened');
-                }, 200);
                 
                 document.removeEventListener('keydown', handler, true);
-                console.log('🔓 Event listener removed');
             };
             
-            // captureフェーズでリスニング（優先度高）
             document.addEventListener('keydown', handler, true);
-            console.log('🎯 Waiting for key input...');
         }
-
-        // マッピング削除
-        function removeMapping(key) {
-            console.log(`🗑️ Removing mapping for key: "${key}"`);
-            console.log('Before:', keymapData.mappings);
-            
+        
+        // インラインでマッピング削除
+        function removeMappingInline(key) {
+            console.log(`🗑️ Removing mapping inline: "${key}"`);
             delete keymapData.mappings[key];
-            
-            console.log('After:', keymapData.mappings);
             updateMappingPreview();
-            showMappingEditor();
             console.log('✅ Removed mapping:', key);
         }
 
         // イベントリスナー
-        document.getElementById('btn-edit-mapping').addEventListener('click', showMappingEditor);
-        document.getElementById('btn-close-modal').addEventListener('click', () => {
-            document.getElementById('mapping-modal').style.display = 'none';
-            editingKey = null;
-            editingValue = null;
-        });
+        document.getElementById('btn-toggle-mappings').addEventListener('click', toggleMappingsDetail);
 
         // グローバルスコープに関数を登録（onclick から呼び出し可能にする）
-        window.editMappingValue = editMappingValue;
-        window.removeMapping = removeMapping;
-        window.showMappingEditor = showMappingEditor;
+        window.editMappingValueInline = editMappingValueInline;
+        window.removeMappingInline = removeMappingInline;
+        window.toggleMappingsDetail = toggleMappingsDetail;
 
         console.log('  Target Rubi:', TARGET_RUBI);
 
