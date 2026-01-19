@@ -408,38 +408,18 @@
             } else {
                 editItems.innerHTML = Object.entries(mappings)
                     .map(([from, to]) => `
-                        <div style="background: #f8f9fa; padding: 12px; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;" data-mapping="true">
-                            <div style="cursor: pointer; flex: 1;" data-from="${from}" data-to="${to}" class="mapping-item">
+                        <div style="background: #f8f9fa; padding: 12px; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="cursor: pointer; flex: 1;" onclick="window.editMappingValue('${from}', '${to}')">
                                 <span style="font-weight: bold; font-size: 14px;">${from}</span>
                                 <span style="color: #95a5a6; margin: 0 8px;">→</span>
                                 <span style="color: #27ae60; font-weight: bold; font-size: 14px; text-decoration: underline;">${to}</span>
                                 <span style="font-size: 10px; color: #bdc3c7; margin-left: 8px;">(クリックで変更)</span>
                             </div>
-                            <button class="remove-mapping-btn" data-from="${from}" style="padding: 4px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                            <button onclick="window.removeMapping('${from}')" style="padding: 4px 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
                                 削除
                             </button>
                         </div>
                     `).join('');
-                
-                // クリックイベントリスナーを登録
-                editItems.querySelectorAll('.mapping-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        const from = e.currentTarget.dataset.from;
-                        const to = e.currentTarget.dataset.to;
-                        console.log(`🖱️ Clicked mapping item: ${from} → ${to}`);
-                        editMappingValue(from, to);
-                    });
-                });
-                
-                // 削除ボタンのイベントリスナーを登録
-                editItems.querySelectorAll('.remove-mapping-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const from = e.currentTarget.dataset.from;
-                        console.log(`🗑️ Delete button clicked for: ${from}`);
-                        removeMapping(from);
-                    });
-                });
             }
             
             modal.style.display = 'block';
@@ -552,6 +532,11 @@
             editingKey = null;
             editingValue = null;
         });
+
+        // グローバルスコープに関数を登録（onclick から呼び出し可能にする）
+        window.editMappingValue = editMappingValue;
+        window.removeMapping = removeMapping;
+        window.showMappingEditor = showMappingEditor;
 
         console.log('  Target Rubi:', TARGET_RUBI);
 
