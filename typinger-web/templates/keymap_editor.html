@@ -364,6 +364,10 @@
         // メッセージ表示
         function showMessage(text, type = 'info') {
             const messageArea = document.getElementById('message-area');
+            if (!messageArea) {
+                console.error('❌ message-area element not found');
+                return;
+            }
             messageArea.textContent = text;
             messageArea.style.background = type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1';
             messageArea.style.color = type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460';
@@ -382,6 +386,10 @@
                 const data = await response.json();
 
                 const container = document.getElementById('saved-keymaps-list');
+                if (!container) {
+                    console.error('❌ saved-keymaps-list element not found');
+                    return;
+                }
                 
                 if (!data.ok || !data.keymaps || data.keymaps.length === 0) {
                     container.innerHTML = '<div style="background: #f0f0f0; padding: 10px; border-radius: 4px; text-align: center; color: #999; grid-column: 1/-1;">保存済みキーマップがありません</div>';
@@ -426,7 +434,8 @@
 
                 if (data.keymap && data.keymap.mappings) {
                     currentMappings = data.keymap.mappings;
-                    document.getElementById('keymap-name').value = name;
+                    const nameInput = document.getElementById('keymap-name');
+                    if (nameInput) nameInput.value = name;
                     updateMappingsList();
                     showMessage(`✅ キーマップ '${name}' を読み込みました`, 'success');
                 } else {
@@ -465,6 +474,10 @@
         // マッピング一覧を更新
         function updateMappingsList() {
             const mappingsList = document.getElementById('mappings-list');
+            if (!mappingsList) {
+                console.error('❌ mappings-list element not found');
+                return;
+            }
             
             if (Object.keys(currentMappings).length === 0) {
                 mappingsList.innerHTML = '<p style="color: #999; text-align: center;">マッピングがまだありません</p>';
@@ -489,6 +502,8 @@
 
         // マッピング追加
         function addMapping() {
+            console.log(`🖱️ addMapping called - source: ${sourceKeyValue}, target: ${targetKeyValue}`);
+            
             if (!sourceKeyValue || !targetKeyValue) {
                 showMessage('元のキーと変更先のキーを両方選択してください', 'error');
                 return;
@@ -503,7 +518,13 @@
 
         // キーマップ保存
         async function saveKeymap() {
-            const name = document.getElementById('keymap-name').value.trim();
+            const nameInput = document.getElementById('keymap-name');
+            if (!nameInput) {
+                console.error('❌ keymap-name element not found');
+                return;
+            }
+            
+            const name = nameInput.value.trim();
             
             if (!name) {
                 showMessage('キーマップ名を入力してください', 'error');
@@ -548,10 +569,18 @@
         function clearMapping() {
             sourceKeyValue = null;
             targetKeyValue = null;
-            document.getElementById('source-key-display').innerHTML = '<span style="color: #999;">ここをクリック</span>';
-            document.getElementById('source-key-display').style.background = 'white';
-            document.getElementById('target-key-display').innerHTML = '<span style="color: #999;">ここをクリック</span>';
-            document.getElementById('target-key-display').style.background = 'white';
+            
+            const sourceDisplay = document.getElementById('source-key-display');
+            const targetDisplay = document.getElementById('target-key-display');
+            
+            if (sourceDisplay) {
+                sourceDisplay.innerHTML = '<span style="color: #999;">ここをクリック</span>';
+                sourceDisplay.style.background = 'white';
+            }
+            if (targetDisplay) {
+                targetDisplay.innerHTML = '<span style="color: #999;">ここをクリック</span>';
+                targetDisplay.style.background = 'white';
+            }
             mappingMode = null;
         }
 
@@ -563,60 +592,108 @@
         window.saveKeymap = saveKeymap;
         window.clearMapping = clearMapping;
 
-        // イベントリスナー
-        document.getElementById('source-key-display').addEventListener('click', () => {
-            mappingMode = 'source';
-            document.getElementById('source-key-display').style.background = '#fff3cd';
-            document.getElementById('source-key-display').innerHTML = '<span style="color: #856404;">🔴 キー入力待機中...</span>';
-            console.log('📍 Waiting for source key input...');
-        });
-
-        document.getElementById('target-key-display').addEventListener('click', () => {
-            mappingMode = 'target';
-            document.getElementById('target-key-display').style.background = '#d1ecf1';
-            document.getElementById('target-key-display').innerHTML = '<span style="color: #0c5460;">🔴 キー入力待機中...</span>';
-            console.log('🎯 Waiting for target key input...');
-        });
-
-        document.getElementById('btn-clear-mapping').addEventListener('click', clearMapping);
-        document.getElementById('btn-add-mapping').addEventListener('click', addMapping);
-        document.getElementById('btn-save-keymap').addEventListener('click', saveKeymap);
-
-        document.getElementById('btn-load-keymap').addEventListener('click', () => {
-            const name = document.getElementById('keymap-name').value.trim();
-            if (name) {
-                loadKeymap(name);
+        // DOM 読み込み完了後に初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎯 DOM Content Loaded - Initializing...');
+            
+            // イベントリスナー登録
+            const sourceDisplay = document.getElementById('source-key-display');
+            const targetDisplay = document.getElementById('target-key-display');
+            const btnClear = document.getElementById('btn-clear-mapping');
+            const btnAdd = document.getElementById('btn-add-mapping');
+            const btnSave = document.getElementById('btn-save-keymap');
+            const btnLoad = document.getElementById('btn-load-keymap');
+            
+            if (sourceDisplay) {
+                sourceDisplay.addEventListener('click', () => {
+                    console.log('🖱️ Source key display clicked');
+                    mappingMode = 'source';
+                    sourceDisplay.style.background = '#fff3cd';
+                    sourceDisplay.innerHTML = '<span style="color: #856404;">🔴 キー入力待機中...</span>';
+                    console.log('📍 Waiting for source key input...');
+                });
             } else {
-                showMessage('キーマップ名を入力してください', 'error');
+                console.error('❌ source-key-display element not found');
             }
+
+            if (targetDisplay) {
+                targetDisplay.addEventListener('click', () => {
+                    console.log('🖱️ Target key display clicked');
+                    mappingMode = 'target';
+                    targetDisplay.style.background = '#d1ecf1';
+                    targetDisplay.innerHTML = '<span style="color: #0c5460;">🔴 キー入力待機中...</span>';
+                    console.log('🎯 Waiting for target key input...');
+                });
+            } else {
+                console.error('❌ target-key-display element not found');
+            }
+
+            if (btnClear) {
+                btnClear.addEventListener('click', () => {
+                    console.log('🖱️ Clear button clicked');
+                    clearMapping();
+                });
+            }
+
+            if (btnAdd) {
+                btnAdd.addEventListener('click', () => {
+                    console.log('🖱️ Add mapping button clicked');
+                    addMapping();
+                });
+            }
+
+            if (btnSave) {
+                btnSave.addEventListener('click', () => {
+                    console.log('🖱️ Save keymap button clicked');
+                    saveKeymap();
+                });
+            }
+
+            if (btnLoad) {
+                btnLoad.addEventListener('click', () => {
+                    console.log('🖱️ Load keymap button clicked');
+                    const nameInput = document.getElementById('keymap-name');
+                    const name = nameInput ? nameInput.value.trim() : '';
+                    if (name) {
+                        loadKeymap(name);
+                    } else {
+                        showMessage('キーマップ名を入力してください', 'error');
+                    }
+                });
+            }
+
+            // グローバルキー入力リスナー
+            document.addEventListener('keydown', (e) => {
+                if (!mappingMode) return;
+                
+                e.preventDefault();
+                const keyName = e.key;
+                
+                console.log(`⌨️ Key pressed in ${mappingMode} mode: ${keyName} (code: ${e.code})`);
+
+                if (mappingMode === 'source') {
+                    sourceKeyValue = keyName;
+                    if (sourceDisplay) {
+                        sourceDisplay.innerHTML = `<span>${keyName}</span>`;
+                        sourceDisplay.style.background = '#d4edda';
+                    }
+                    console.log(`✅ Source key set: ${keyName}`);
+                } else if (mappingMode === 'target') {
+                    targetKeyValue = keyName;
+                    if (targetDisplay) {
+                        targetDisplay.innerHTML = `<span>${keyName}</span>`;
+                        targetDisplay.style.background = '#d4edda';
+                    }
+                    console.log(`✅ Target key set: ${keyName}`);
+                }
+
+                mappingMode = null;
+            }, true);
+
+            // 初期化
+            loadSavedKeymaps();
+            console.log('✅ Initialization complete');
         });
-
-        // グローバルキー入力リスナー
-        document.addEventListener('keydown', (e) => {
-            if (!mappingMode) return;
-            
-            e.preventDefault();
-            const keyName = e.key;
-            
-            console.log(`⌨️ Key pressed in ${mappingMode} mode: ${keyName} (code: ${e.code})`);
-
-            if (mappingMode === 'source') {
-                sourceKeyValue = keyName;
-                document.getElementById('source-key-display').innerHTML = `<span>${keyName}</span>`;
-                document.getElementById('source-key-display').style.background = '#d4edda';
-                console.log(`✅ Source key set: ${keyName}`);
-            } else if (mappingMode === 'target') {
-                targetKeyValue = keyName;
-                document.getElementById('target-key-display').innerHTML = `<span>${keyName}</span>`;
-                document.getElementById('target-key-display').style.background = '#d4edda';
-                console.log(`✅ Target key set: ${keyName}`);
-            }
-
-            mappingMode = null;
-        }, true);
-
-        // 初期化
-        loadSavedKeymaps();
     </script>
 </body>
 </html>
