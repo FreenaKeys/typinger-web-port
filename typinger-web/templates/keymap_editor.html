@@ -496,6 +496,9 @@
                 const addedFrom = sourceKeyValue;
                 const addedTo = targetKeyValue;
                 
+                // キーボード表示のキーのテキストを更新
+                updateKeyboardDisplay();
+                
                 // UI更新（クリアする前に！）
                 console.log('🔄 Updating UI...');
                 updateMappingsList();
@@ -511,6 +514,42 @@
                 clearMapping();
                 console.log('🔄 Reset for next mapping');
             }
+        }
+
+        // キーボード表示を更新（マッピングを適用）
+        function updateKeyboardDisplay() {
+            console.log('🔄 Updating keyboard display with mappings...');
+            const keys = document.querySelectorAll('.key');
+            
+            keys.forEach(keyElement => {
+                const originalText = keyElement.textContent.trim();
+                
+                // 特殊キーはスキップ
+                if (['Esc', 'Tab', 'Caps Lock', 'Shift', 'Ctrl', 'Win', 'Alt', 'Menu', 'Backspace', 'Enter', 'Space'].includes(originalText)) {
+                    return;
+                }
+                
+                // 小文字に統一してマッピング確認
+                const lowerText = originalText.toLowerCase();
+                
+                if (currentMappings[lowerText]) {
+                    // マッピングがある場合、新しいテキストを表示
+                    const mappedText = currentMappings[lowerText];
+                    keyElement.textContent = mappedText.toUpperCase();
+                    keyElement.style.background = '#ffc107';
+                    keyElement.style.color = '#000';
+                    keyElement.title = `${lowerText} → ${mappedText}`;
+                    console.log(`✅ Updated key display: ${originalText} → ${mappedText.toUpperCase()}`);
+                } else {
+                    // マッピングがない場合は元に戻す
+                    keyElement.textContent = originalText;
+                    keyElement.style.background = '';
+                    keyElement.style.color = '';
+                    keyElement.title = '';
+                }
+            });
+            
+            console.log('✅ Keyboard display updated');
         }
 
         // マッピング一覧を更新
@@ -639,6 +678,7 @@
                     const nameInput = document.getElementById('keymap-name');
                     if (nameInput) nameInput.value = name;
                     
+                    updateKeyboardDisplay();  // ← 追加
                     updateMappingsList();
                     showMessage(`✅ キーマップ '${name}' を読み込みました`, 'success');
                     console.log(`✅ Loaded keymap for editing:`, currentMappings);
