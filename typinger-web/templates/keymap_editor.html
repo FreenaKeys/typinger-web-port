@@ -482,14 +482,23 @@
                 console.log(`✅ Auto-added mapping: "${sourceKeyValue}" → "${targetKeyValue}"`);
                 console.log(`   Updated currentMappings:`, currentMappings);
                 
-                // UI更新
+                // ストレージに保存
+                saveCurrentMappingsToStorage();
+                
+                // 値を保存（後でクリアする前に）
+                const addedFrom = sourceKeyValue;
+                const addedTo = targetKeyValue;
+                
+                // UI更新（クリアする前に！）
+                console.log('🔄 Updating UI...');
                 updateMappingsList();
+                console.log('✅ Mappings list updated');
                 
                 // メッセージ表示
-                const successMsg = `マッピング '${sourceKeyValue} → ${targetKeyValue}' を追加しました`;
+                const successMsg = `マッピング '${addedFrom} → ${addedTo}' を追加しました`;
                 showMessage(successMsg, 'success');
                 
-                // 次のマッピングのためにリセット
+                // 次のマッピングのためにリセット（UI更新の後）
                 sourceKeyValue = null;
                 targetKeyValue = null;
                 clearMapping();
@@ -528,8 +537,35 @@
         function removeMapping(key) {
             console.log(`🗑️ Removing mapping: ${key}`);
             delete currentMappings[key];
+            saveCurrentMappingsToStorage();
             updateMappingsList();
             showMessage(`マッピング '${key}' を削除しました`, 'success');
+        }
+
+        // 現在のマッピングをローカルストレージに保存
+        function saveCurrentMappingsToStorage() {
+            try {
+                localStorage.setItem('currentMappings', JSON.stringify(currentMappings));
+                console.log('💾 Saved currentMappings to localStorage:', currentMappings);
+            } catch (error) {
+                console.warn('⚠️ Failed to save to localStorage:', error);
+            }
+        }
+
+        // ローカルストレージからマッピングを復元
+        function loadCurrentMappingsFromStorage() {
+            try {
+                const saved = localStorage.getItem('currentMappings');
+                if (saved) {
+                    currentMappings = JSON.parse(saved);
+                    console.log('📂 Loaded currentMappings from localStorage:', currentMappings);
+                    updateMappingsList();
+                } else {
+                    console.log('ℹ️ No saved mappings in localStorage');
+                }
+            } catch (error) {
+                console.warn('⚠️ Failed to load from localStorage:', error);
+            }
         }
 
         // マッピング追加
@@ -770,6 +806,7 @@
                 setupAllEventListeners();
                 setupKeyboardClickListeners();
                 loadSavedKeymaps();
+                loadCurrentMappingsFromStorage();  // ← 追加
                 console.log('✅ Initialization complete');
             });
         } else {
@@ -778,6 +815,7 @@
             setupAllEventListeners();
             setupKeyboardClickListeners();
             loadSavedKeymaps();
+            loadCurrentMappingsFromStorage();  // ← 追加
             console.log('✅ Initialization complete');
         }
 
