@@ -346,29 +346,41 @@
             }
             
             if (!keymapData.mappings) {
+                console.warn('⚠️ keymapData.mappings is null, initializing');
                 keymapData.mappings = {};
             }
             
             const mappings = keymapData.mappings;
             const mappingCount = Object.keys(mappings).length;
             
-            console.log(`🎯 Updating preview - ${mappingCount} mappings:`, mappings);
+            console.log(`🎯 updateMappingPreview called - ${mappingCount} mappings`);
+            console.log('   Mappings:', mappings);
             
             if (mappingCount > 0) {
+                console.log('✅ Showing preview (has mappings)');
                 preview.style.display = 'block';
                 const previewMappings = document.getElementById('preview-mappings');
-                previewMappings.innerHTML = Object.entries(mappings)
-                    .slice(0, 5)
-                    .map(([from, to]) => `
-                        <span style="background: #ecf0f1; padding: 3px 8px; border-radius: 3px; font-size: 11px;">
-                            <strong>${from}</strong> → <strong>${to}</strong>
-                        </span>
-                    `).join('');
                 
+                const html = Object.entries(mappings)
+                    .slice(0, 5)
+                    .map(([from, to]) => {
+                        console.log(`  📍 Rendering mapping: "${from}" → "${to}"`);
+                        return `
+                            <span style="background: #ecf0f1; padding: 3px 8px; border-radius: 3px; font-size: 11px;">
+                                <strong>${from}</strong> → <strong>${to}</strong>
+                            </span>
+                        `;
+                    }).join('');
+                
+                let finalHtml = html;
                 if (mappingCount > 5) {
-                    previewMappings.innerHTML += `<span style="font-size: 11px; color: #7f8c8d;">他 ${mappingCount - 5} 個</span>`;
+                    finalHtml += `<span style="font-size: 11px; color: #7f8c8d;">他 ${mappingCount - 5} 個</span>`;
                 }
+                
+                previewMappings.innerHTML = finalHtml;
+                console.log('✅ Preview HTML updated');
             } else {
+                console.log('❌ Hiding preview (no mappings)');
                 preview.style.display = 'none';
             }
         }
@@ -433,14 +445,27 @@
                 </div>
             `;
             
-            // フォーカスをボタンに移して、キー入力を確実にキャッチ
-            editItems.focus();
+            // タイピング入力フィールドをblur（フォーカス喪失）
+            const typingInput = document.getElementById('typing-input');
+            if (typingInput) {
+                typingInput.blur();
+                console.log('💤 Blurred typing input');
+            }
             
-            // キー入力待機 (一度だけ)
+            // キー入力待機
+            let handled = false;
             const handler = (e) => {
+                if (handled) return; // 重複実行防止
+                
                 // 制御キーは無視
-                if (e.ctrlKey || e.altKey || e.metaKey) return;
+                if (e.ctrlKey || e.altKey || e.metaKey) {
+                    console.warn('⚠️ Control key ignored');
+                    return;
+                }
+                
                 if (e.key === 'Escape') {
+                    handled = true;
+                    console.log('🚫 Editing cancelled with Escape');
                     document.removeEventListener('keydown', handler, true);
                     showMappingEditor();
                     return;
@@ -448,10 +473,11 @@
                 
                 e.preventDefault();
                 e.stopPropagation();
+                handled = true;
                 
                 const newValue = e.key;
-                console.log(`✅ New value captured: ${newValue}`);
-                console.log(`🔄 Updating: ${from} → ${newValue}`);
+                console.log(`✅ New value captured: "${newValue}" (code: ${e.code})`);
+                console.log(`🔄 Updating: "${from}" → "${newValue}"`);
                 
                 // keymapData を確認
                 if (!keymapData.mappings) {
@@ -459,27 +485,42 @@
                     keymapData.mappings = {};
                 }
                 
+                // 更新
+                const oldValue = keymapData.mappings[from];
                 keymapData.mappings[from] = newValue;
-                console.log('✅ Mapping updated:', keymapData.mappings);
+                console.log(`✅ Mapping updated: "${from}" "${oldValue}" → "${newValue}"`);
+                console.log('📊 Full mappings now:', keymapData.mappings);
+                
+                // UI更新
                 updateMappingPreview();
+                console.log('🎨 Preview updated');
                 
                 // UI再表示
                 setTimeout(() => {
                     showMappingEditor();
-                }, 100);
+                    console.log('📋 Editor reopened');
+                }, 200);
                 
                 document.removeEventListener('keydown', handler, true);
+                console.log('🔓 Event listener removed');
             };
             
+            // captureフェーズでリスニング（優先度高）
             document.addEventListener('keydown', handler, true);
+            console.log('🎯 Waiting for key input...');
         }
 
         // マッピング削除
         function removeMapping(key) {
+            console.log(`🗑️ Removing mapping for key: "${key}"`);
+            console.log('Before:', keymapData.mappings);
+            
             delete keymapData.mappings[key];
+            
+            console.log('After:', keymapData.mappings);
             updateMappingPreview();
             showMappingEditor();
-            console.log(`🗑️ Removed mapping: ${key}`);
+            console.log('✅ Removed mapping:', key);
         }
 
         // イベントリスナー
