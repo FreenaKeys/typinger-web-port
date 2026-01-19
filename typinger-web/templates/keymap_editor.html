@@ -516,9 +516,13 @@
             currentMappings[sourceKeyValue] = targetKeyValue;
             console.log(`✅ Mapping added: "${sourceKeyValue}" → "${targetKeyValue}"`);
             console.log(`   Updated currentMappings:`, currentMappings);
+            
+            // メッセージを先に表示（clearMapping の前に！）
+            const successMsg = `マッピング '${sourceKeyValue} → ${targetKeyValue}' を追加しました`;
+            showMessage(successMsg, 'success');
+            
             updateMappingsList();
             clearMapping();
-            showMessage(`マッピング '${sourceKeyValue} → ${targetKeyValue}' を追加しました`, 'success');
         }
 
         // キーマップ保存
@@ -722,6 +726,7 @@
             document.addEventListener('DOMContentLoaded', () => {
                 console.log('🎯 DOM Content Loaded');
                 setupAllEventListeners();
+                setupKeyboardClickListeners();
                 loadSavedKeymaps();
                 console.log('✅ Initialization complete');
             });
@@ -729,8 +734,66 @@
             // ドキュメント読み込み完了済み
             console.log('📄 Document already loaded');
             setupAllEventListeners();
+            setupKeyboardClickListeners();
             loadSavedKeymaps();
             console.log('✅ Initialization complete');
+        }
+
+        // キーボード表示のキーをクリック可能にする
+        function setupKeyboardClickListeners() {
+            console.log('⌨️ Setting up keyboard click listeners...');
+            
+            // すべてのキー要素を取得
+            const keys = document.querySelectorAll('.key');
+            console.log(`Found ${keys.length} key elements`);
+            
+            keys.forEach(keyElement => {
+                // テキストからキー名を抽出（例: "A" → "a"）
+                let keyText = keyElement.textContent.trim();
+                
+                // 特殊キーはスキップ
+                if (['Esc', 'Tab', 'Caps Lock', 'Shift', 'Ctrl', 'Win', 'Alt', 'Menu', 'Backspace', 'Enter', 'Space'].includes(keyText)) {
+                    console.log(`⏭️ Skipping special key: ${keyText}`);
+                    return;
+                }
+                
+                // クリックイベントを追加
+                keyElement.style.cursor = 'pointer';
+                keyElement.addEventListener('click', () => {
+                    if (!mappingMode) {
+                        console.warn('⚠️ No mapping mode active');
+                        return;
+                    }
+                    
+                    // キーの値を取得（大文字→小文字に統一）
+                    const keyValue = keyText.toLowerCase();
+                    console.log(`🖱️ Keyboard key clicked: "${keyText}" (normalized: "${keyValue}"), mode: ${mappingMode}`);
+                    
+                    if (mappingMode === 'source') {
+                        sourceKeyValue = keyValue;
+                        const sourceDisplay = document.getElementById('source-key-display');
+                        if (sourceDisplay) {
+                            sourceDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyValue}</span>`;
+                            sourceDisplay.style.background = '#d4edda';
+                            sourceDisplay.style.borderColor = '#27ae60';
+                        }
+                        console.log(`✅ Source key set from keyboard click: "${keyValue}"`);
+                        mappingMode = null;
+                    } else if (mappingMode === 'target') {
+                        targetKeyValue = keyValue;
+                        const targetDisplay = document.getElementById('target-key-display');
+                        if (targetDisplay) {
+                            targetDisplay.innerHTML = `<span style="color: #27ae60; font-weight: bold; font-size: 24px;">${keyValue}</span>`;
+                            targetDisplay.style.background = '#d4edda';
+                            targetDisplay.style.borderColor = '#27ae60';
+                        }
+                        console.log(`✅ Target key set from keyboard click: "${keyValue}"`);
+                        mappingMode = null;
+                    }
+                });
+            });
+            
+            console.log('✅ Keyboard click listeners setup complete');
         }
     </script>
 </body>
