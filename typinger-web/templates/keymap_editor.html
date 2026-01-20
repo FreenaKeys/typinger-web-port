@@ -522,43 +522,35 @@
             console.log('🔄 Updating keyboard display with mappings...');
             const keys = document.querySelectorAll('.key');
             
-            // 元のキーボード配列（参照用）
-            const originalKeyboard = {
-                '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', 
-                '6': '6', '7': '7', '8': '8', '9': '9', '0': '0',
-                'q': 'q', 'w': 'w', 'e': 'e', 'r': 'r', 't': 't',
-                'y': 'y', 'u': 'u', 'i': 'i', 'o': 'o', 'p': 'p',
-                'a': 'a', 's': 's', 'd': 'd', 'f': 'f', 'g': 'g',
-                'h': 'h', 'j': 'j', 'k': 'k', 'l': 'l',
-                'z': 'z', 'x': 'x', 'c': 'c', 'v': 'v', 'b': 'b',
-                'n': 'n', 'm': 'm'
-            };
-            
             keys.forEach(keyElement => {
-                const originalText = keyElement.textContent.trim();
-                const lowerText = originalText.toLowerCase();
-                
-                // 特殊キーはスキップ
-                if (['esc', 'tab', 'caps lock', 'shift', 'ctrl', 'win', 'alt', 'menu', 'backspace', 'enter', 'space'].includes(lowerText)) {
-                    return;
+                // data-key 属性から元のキー値を取得（存在しない場合は textContent から）
+                let originalKeyValue = keyElement.getAttribute('data-key');
+                if (!originalKeyValue) {
+                    const originalText = keyElement.textContent.trim();
+                    originalKeyValue = originalText.toLowerCase();
+                    keyElement.setAttribute('data-key', originalKeyValue);
+                    keyElement.setAttribute('data-original-text', originalText);
                 }
                 
-                // 元のキーボード配列に存在するキーのみ処理
-                if (!originalKeyboard[lowerText]) {
+                // 特殊キーはスキップ
+                if (['esc', 'tab', 'caps lock', 'shift', 'ctrl', 'win', 'alt', 'menu', 'backspace', 'enter', 'space'].includes(originalKeyValue)) {
                     return;
                 }
                 
                 // マッピングがあるかチェック
-                if (currentMappings[lowerText]) {
-                    const mappedText = currentMappings[lowerText];
+                if (currentMappings[originalKeyValue]) {
+                    const mappedText = currentMappings[originalKeyValue];
                     keyElement.textContent = mappedText.toUpperCase();
                     keyElement.style.background = '#ffc107';
                     keyElement.style.color = '#000';
-                    keyElement.title = `${lowerText} → ${mappedText}`;
-                    console.log(`✅ Updated key display: ${originalText} → ${mappedText.toUpperCase()}`);
+                    keyElement.title = `${originalKeyValue} → ${mappedText}`;
+                    console.log(`✅ Updated key display: ${originalKeyValue} → ${mappedText.toUpperCase()}`);
                 } else {
                     // マッピングがない場合は元に戻す
-                    keyElement.textContent = originalText;
+                    const originalText = keyElement.getAttribute('data-original-text');
+                    if (originalText) {
+                        keyElement.textContent = originalText;
+                    }
                     keyElement.style.background = '';
                     keyElement.style.color = '';
                     keyElement.title = '';
@@ -579,9 +571,21 @@
             sourceKeyValue = null;
             targetKeyValue = null;
             
+            // キーボード表示をリセット
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(keyElement => {
+                const originalText = keyElement.getAttribute('data-original-text');
+                if (originalText) {
+                    keyElement.textContent = originalText;
+                    keyElement.style.background = '';
+                    keyElement.style.color = '';
+                    keyElement.style.boxShadow = '';
+                    keyElement.title = '';
+                }
+            });
+            
             // UI更新
             saveCurrentMappingsToStorage();
-            updateKeyboardDisplay();
             updateMappingsList();
             clearMapping();
             
@@ -945,8 +949,8 @@
                 // 画面上のキーボードのハイライトを解除
                 const highlightedKeys = document.querySelectorAll('.key');
                 highlightedKeys.forEach(key => {
-                    if (key.style.background === 'rgb(255, 193, 7)' || key.style.boxShadow.includes('ff9800')) {
-                        key.style.background = '';
+                    // マッピング済みのキー（黄色）以外のハイライトを削除
+                    if (key.getAttribute('data-key') && !currentMappings[key.getAttribute('data-key')]) {
                         key.style.boxShadow = '';
                     }
                 });
@@ -970,6 +974,10 @@
             console.log('📄 Document is loading...');
             document.addEventListener('DOMContentLoaded', () => {
                 console.log('🎯 DOM Content Loaded');
+                // リスナー登録フラグをリセット
+                document.querySelectorAll('.key').forEach(key => {
+                    key.removeAttribute('data-listener-attached');
+                });
                 setupAllEventListeners();
                 setupKeyboardClickListeners();
                 loadSavedKeymaps();
@@ -980,6 +988,10 @@
         } else {
             // ドキュメント読み込み完了済み
             console.log('📄 Document already loaded');
+            // リスナー登録フラグをリセット
+            document.querySelectorAll('.key').forEach(key => {
+                key.removeAttribute('data-listener-attached');
+            });
             setupAllEventListeners();
             setupKeyboardClickListeners();
             loadSavedKeymaps();
@@ -998,25 +1010,37 @@
             
             keys.forEach(keyElement => {
                 // テキストからキー名を抽出（例: "A" → "a"）
-                let keyText = keyElement.textContent.trim();
+                const originalText = keyElement.textContent.trim();
+                const keyText = originalText.toLowerCase();
                 
-                // 特殊キーはスキップ
-                if (['Esc', 'Tab', 'Caps Lock', 'Shift', 'Ctrl', 'Win', 'Alt', 'Menu', 'Backspace', 'Enter', 'Space'].includes(keyText)) {
-                    console.log(`⏭️ Skipping special key: ${keyText}`);
+                // 既にリスナーが登録されている場合はスキップ
+                if (keyElement.hasAttribute('data-listener-attached')) {
+                    console.log(`⏭️ Listener already attached to key: ${originalText}`);
                     return;
                 }
                 
-                // クリックイベントを追加
+                // 元のテキストをデータ属性に保存（表示変更後も復元用）
+                keyElement.setAttribute('data-original-text', originalText);
+                keyElement.setAttribute('data-key', keyText);
+                keyElement.setAttribute('data-listener-attached', 'true');
+                
+                // 特殊キーはスキップ
+                if (['esc', 'tab', 'caps lock', 'shift', 'ctrl', 'win', 'alt', 'menu', 'backspace', 'enter', 'space'].includes(keyText)) {
+                    console.log(`⏭️ Skipping special key: ${originalText}`);
+                    return;
+                }
+                
+                // クリックイベントを追加（一度だけ）
                 keyElement.style.cursor = 'pointer';
-                keyElement.addEventListener('click', () => {
+                keyElement.addEventListener('click', function handleKeyClick() {
                     if (mappingMode !== null) {
                         console.warn('⚠️ Mapping already in progress');
                         return;
                     }
                     
-                    // キーの値を取得（大文字→小文字に統一）
-                    const keyValue = keyText.toLowerCase();
-                    console.log(`🖱️ Keyboard key clicked: "${keyText}" (normalized: "${keyValue}")`);
+                    // data-key 属性から正確なキー値を取得（表示が変わっていてもOK）
+                    const keyValue = keyElement.getAttribute('data-key') || keyText;
+                    console.log(`🖱️ Keyboard key clicked: "${originalText}" (normalized: "${keyValue}")`);
                     
                     // 元のキーとして設定
                     sourceKeyValue = keyValue;
