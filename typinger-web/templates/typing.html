@@ -50,7 +50,112 @@
                         </div>
                     </div>
 
-                    <!-- 目標テキスト表示 -->
+                    <!-- キーボード表示（カスタムマッピング視覚化） -->
+                    <div id="keyboard-display-section" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; display: none;">
+                        <h3 style="margin: 0 0 15px 0; color: #2c3e50; font-size: 14px;">⌨️ キーボード配置 (カスタムマッピング)</h3>
+                        <div id="keyboard-layout" style="display: flex; flex-direction: column; gap: 8px; font-family: 'Arial', sans-serif; background: #2c3e50; padding: 20px; border-radius: 8px;">
+                            <!-- Fキー行 -->
+                            <div style="display: flex; gap: 6px; justify-content: center;">
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">Esc</span>
+                                <span style="flex: 0.3;"></span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F1</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F2</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F3</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F4</span>
+                                <span style="flex: 0.3;"></span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F5</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F6</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F7</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F8</span>
+                                <span style="flex: 0.3;"></span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F9</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F10</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F11</span>
+                                <span style="background: #3498db; color: white; min-width: 40px; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">F12</span>
+                            </div>
+
+                            <!-- 数字行 -->
+                            <div style="display: flex; gap: 6px; justify-content: center;">
+                                <span class="keyboard-key" data-key="`" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">`</span>
+                                <span class="keyboard-key" data-key="1" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">1</span>
+                                <span class="keyboard-key" data-key="2" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">2</span>
+                                <span class="keyboard-key" data-key="3" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">3</span>
+                                <span class="keyboard-key" data-key="4" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">4</span>
+                                <span class="keyboard-key" data-key="5" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">5</span>
+                                <span class="keyboard-key" data-key="6" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">6</span>
+                                <span class="keyboard-key" data-key="7" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">7</span>
+                                <span class="keyboard-key" data-key="8" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">8</span>
+                                <span class="keyboard-key" data-key="9" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">9</span>
+                                <span class="keyboard-key" data-key="0" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">0</span>
+                                <span class="keyboard-key" data-key="-" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">-</span>
+                                <span class="keyboard-key" data-key="=" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">=</span>
+                                <span style="background: #3498db; color: white; min-width: 80px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Backspace</span>
+                            </div>
+
+                            <!-- QWERTY行 -->
+                            <div style="display: flex; gap: 6px; justify-content: center;">
+                                <span style="background: #3498db; color: white; min-width: 60px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Tab</span>
+                                <span class="keyboard-key" data-key="q" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Q</span>
+                                <span class="keyboard-key" data-key="w" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">W</span>
+                                <span class="keyboard-key" data-key="e" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">E</span>
+                                <span class="keyboard-key" data-key="r" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">R</span>
+                                <span class="keyboard-key" data-key="t" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">T</span>
+                                <span class="keyboard-key" data-key="y" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Y</span>
+                                <span class="keyboard-key" data-key="u" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">U</span>
+                                <span class="keyboard-key" data-key="i" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">I</span>
+                                <span class="keyboard-key" data-key="o" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">O</span>
+                                <span class="keyboard-key" data-key="p" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">P</span>
+                                <span class="keyboard-key" data-key="[" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">[</span>
+                                <span class="keyboard-key" data-key="]" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">]</span>
+                                <span class="keyboard-key" data-key="\\" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 60px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"></span>
+                            </div>
+
+                            <!-- ASDF行 -->
+                            <div style="display: flex; gap: 6px; justify-content: center;">
+                                <span style="background: #e74c3c; color: white; min-width: 75px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Caps Lock</span>
+                                <span class="keyboard-key" data-key="a" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">A</span>
+                                <span class="keyboard-key" data-key="s" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">S</span>
+                                <span class="keyboard-key" data-key="d" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">D</span>
+                                <span class="keyboard-key" data-key="f" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">F</span>
+                                <span class="keyboard-key" data-key="g" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">G</span>
+                                <span class="keyboard-key" data-key="h" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">H</span>
+                                <span class="keyboard-key" data-key="j" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">J</span>
+                                <span class="keyboard-key" data-key="k" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">K</span>
+                                <span class="keyboard-key" data-key="l" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">L</span>
+                                <span class="keyboard-key" data-key=";" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">;</span>
+                                <span class="keyboard-key" data-key="'" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">'</span>
+                                <span style="background: #3498db; color: white; min-width: 110px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Enter</span>
+                            </div>
+
+                            <!-- ZXCV行 -->
+                            <div style="display: flex; gap: 6px; justify-content: center;">
+                                <span style="background: #e74c3c; color: white; min-width: 90px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Shift</span>
+                                <span class="keyboard-key" data-key="z" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Z</span>
+                                <span class="keyboard-key" data-key="x" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">X</span>
+                                <span class="keyboard-key" data-key="c" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">C</span>
+                                <span class="keyboard-key" data-key="v" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">V</span>
+                                <span class="keyboard-key" data-key="b" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">B</span>
+                                <span class="keyboard-key" data-key="n" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">N</span>
+                                <span class="keyboard-key" data-key="m" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">M</span>
+                                <span class="keyboard-key" data-key="," style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">,</span>
+                                <span class="keyboard-key" data-key="." style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">.</span>
+                                <span class="keyboard-key" data-key="/" style="background: #ecf0f1; border: 2px solid #bdc3c7; border-radius: 4px; padding: 10px 8px; min-width: 40px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">/</span>
+                                <span style="background: #e74c3c; color: white; min-width: 90px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Shift</span>
+                            </div>
+
+                            <!-- 修飾キー行 -->
+                            <div style="display: flex; gap: 6px; justify-content: center;">
+                                <span style="background: #e74c3c; color: white; min-width: 50px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Ctrl</span>
+                                <span style="background: #e74c3c; color: white; min-width: 50px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Win</span>
+                                <span style="background: #e74c3c; color: white; min-width: 50px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Alt</span>
+                                <span style="background: #34495e; color: white; flex: 1; min-width: 300px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Space</span>
+                                <span style="background: #e74c3c; color: white; min-width: 50px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Alt</span>
+                                <span style="background: #e74c3c; color: white; min-width: 50px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Win</span>
+                                <span style="background: #e74c3c; color: white; min-width: 50px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Menu</span>
+                                <span style="background: #e74c3c; color: white; min-width: 50px; padding: 10px 8px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">Ctrl</span>
+                            </div>
+                        </div>
+                    </div>
                     <div class="target-text-box">
                         <p class="label">目標テキスト</p>
                         <p id="target-text" class="target-text">{{ target_text }}</p>
@@ -163,7 +268,7 @@
                 if (['jis', 'ansi', 'dvorak'].includes(preset)) {
                     response = await fetch(`/api/keymap/presets/${preset}`);
                 } else {
-                    // カスタムキーマップ
+                    // カスタムキーマップ（.jsonなしで送信）
                     response = await fetch(`/api/keymap/${preset}`);
                 }
                 
@@ -186,7 +291,12 @@
                     };
                     
                     const displayName = presetNames[preset] || preset;
-                    document.getElementById('keymap-info').textContent = `✅ 使用中: ${displayName}`;
+                    const mappingCount = Object.keys(keymapData.mappings).length;
+                    if (mappingCount > 0) {
+                        document.getElementById('keymap-info').textContent = `✅ 使用中: ${displayName} (${mappingCount}個のマッピング)`;
+                    } else {
+                        document.getElementById('keymap-info').textContent = `✅ 使用中: ${displayName}`;
+                    }
                     console.log(`✅ Keymap loaded: ${preset}`, keymapData);
                 } else {
                     console.error('❌ Failed to load keymap:', data.error);
@@ -262,8 +372,61 @@
                 'dvorak': 'Dvorak配列'
             };
             document.getElementById('current-keymap-display').textContent = presetNames[preset] || preset;
-            updateMappingPreview();
+            
+            // マッピングプレビューを更新
+            setTimeout(() => {
+                updateMappingPreview();
+                updateKeyboardDisplay();
+            }, 100);
         });
+
+        // ========== キーボード表示更新 ==========
+        function updateKeyboardDisplay() {
+            const keyboardSection = document.getElementById('keyboard-display-section');
+            
+            // マッピングがない場合は非表示
+            if (!keymapData || !keymapData.mappings || Object.keys(keymapData.mappings).length === 0) {
+                keyboardSection.style.display = 'none';
+                return;
+            }
+            
+            keyboardSection.style.display = 'block';
+            
+            // すべてのキーボードキーを更新
+            const keyElements = document.querySelectorAll('.keyboard-key');
+            keyElements.forEach(keyElement => {
+                const keyValue = keyElement.getAttribute('data-key');
+                
+                if (keymapData.mappings[keyValue]) {
+                    // マッピングがある場合は黄色にして、マップ先を表示
+                    const mappedChar = keymapData.mappings[keyValue];
+                    keyElement.textContent = mappedChar.toUpperCase();
+                    keyElement.style.background = '#ffc107';
+                    keyElement.style.color = '#000';
+                    keyElement.title = `${keyValue} → ${mappedChar}`;
+                } else {
+                    // マッピングがない場合は元の表示に戻す
+                    const originalChars = {
+                        '`': '`', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5',
+                        '6': '6', '7': '7', '8': '8', '9': '9', '0': '0',
+                        '-': '-', '=': '=',
+                        'q': 'Q', 'w': 'W', 'e': 'E', 'r': 'R', 't': 'T',
+                        'y': 'Y', 'u': 'U', 'i': 'I', 'o': 'O', 'p': 'P',
+                        '[': '[', ']': ']', '\\': '\\',
+                        'a': 'A', 's': 'S', 'd': 'D', 'f': 'F', 'g': 'G',
+                        'h': 'H', 'j': 'J', 'k': 'K', 'l': 'L', ';': ';', "'": "'",
+                        'z': 'Z', 'x': 'X', 'c': 'C', 'v': 'V', 'b': 'B',
+                        'n': 'N', 'm': 'M', ',': ',', '.': '.', '/': '/'
+                    };
+                    keyElement.textContent = originalChars[keyValue] || keyValue;
+                    keyElement.style.background = '#ecf0f1';
+                    keyElement.style.color = '#2c3e50';
+                    keyElement.title = '';
+                }
+            });
+            
+            console.log('✅ Keyboard display updated');
+        }
 
         // ========== ストレージアクセス関数（セキュリティエラー対応）==========
         function safeGetStorage(key, defaultValue = null) {
@@ -295,12 +458,12 @@
         const savedKeymap = safeGetStorage('selectedKeymap');
         if (savedKeymap) {
             console.log('💾 Loading saved keymap:', savedKeymap);
-            loadKeymap(savedKeymap);
-            // setTimeout でセレクトが更新されるまで待つ
+            // setTimeout で keymapData が準備できるまで待つ
             setTimeout(() => {
+                loadKeymap(savedKeymap);
                 document.getElementById('keymap-select').value = savedKeymap;
                 updateMappingPreview();
-            }, 100);
+            }, 200);
         }
         
         // カスタムキーマップデータ復元
@@ -318,6 +481,7 @@
                     keymapData.mappings = { ...parsed.mappings };
                     console.log('✅ Applied mappings:', keymapData.mappings);
                     updateMappingPreview();
+                    updateKeyboardDisplay();
                 }
             } catch (e) {
                 console.warn('⚠️ Failed to restore keymap data:', e);
@@ -377,6 +541,9 @@
             } else {
                 preview.style.display = 'none';
             }
+            
+            // キーボード表示を更新
+            updateKeyboardDisplay();
         }
         
         // 展開/折りたたみトグル
